@@ -1,7 +1,9 @@
 import {ipcRenderer} from 'electron';
 
+import {AddViewData} from '../types';
+
 import {ADD_VIEW_MESSAGE} from '../constants';
 
-export default function addViewHandler(url: string) {
-    ipcRenderer.send(ADD_VIEW_MESSAGE, url);
+export default function addViewHandler(data: AddViewData) {
+    ipcRenderer.send(ADD_VIEW_MESSAGE, data);
 }

@@ -5,16 +5,17 @@ import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type ResetViewRectsPayload = { id?: string };
+type ResetViewHeightsPayload = { id?: string };
 
-export type ResetViewRectsAction = AppActionMould<'RESET_VIEW_RECTS', ResetViewRectsPayload>
+export type ResetViewHeightsAction = AppActionMould<'RESET_VIEW_HEIGHTS', ResetViewHeightsPayload>
 
-export const [resetViewRects] = actionCreatorFactory<ResetViewRectsAction>({
-    type: 'RESET_VIEW_RECTS',
+export const [resetViewHeights] = actionCreatorFactory<ResetViewHeightsAction>({
+    type: 'RESET_VIEW_HEIGHTS',
     reducer(state, payload) {
         const {viewOptions} = state;
         const {id} = payload;
 
+        // @todo: rows/columns
         if (id && !viewOptions[id]) return state;
 
         if (id) {
@@ -22,7 +23,7 @@ export const [resetViewRects] = actionCreatorFactory<ResetViewRectsAction>({
                 ...state,
                 viewOptions: {
                     ...viewOptions,
-                    [id]: omit(viewOptions[id], 'rectOverride')
+                    [id]: omit(viewOptions[id], 'height')
                 }
             }
         }
@@ -31,7 +32,7 @@ export const [resetViewRects] = actionCreatorFactory<ResetViewRectsAction>({
             ...state,
             viewOptions: reduce(
                 entries(viewOptions),
-                (agg, [key, val]) => assign(agg, {[key]: omit(val, 'rectOverride')}),
+                (agg, [key, val]) => assign(agg, {[key]: omit(val, 'height')}),
                 {}
             )
         };

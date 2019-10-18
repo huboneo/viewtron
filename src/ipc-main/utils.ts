@@ -1,56 +1,97 @@
 import {Rectangle} from 'electron';
-import {filter, map, sumBy} from 'lodash';
+import {filter, map, sumBy, flatMap} from 'lodash';
 
-import {ViewOption} from './state';
+import {ViewtronViews, ViewtronConfig} from '../types';
 
-const VIEW_RECT_SPACING = 5;
-const MIN_WIDTH = 50;
+import {Row} from './state';
 
-export default function calculateViewRects(mainRect: Rectangle, views: ViewOption[]) {
-    const defaults = filter(views, ({rectOverride}) => !rectOverride);
-    const overridden = filter(views, 'rectOverride');
-    let remainingDefaultWidth = mainRect.width - sumBy(overridden, ({rectOverride}) => min50Int(rectOverride!.width));
-    let currX = mainRect.x;
+export default function calculateViewRects(config: ViewtronConfig, mainRect: Rectangle, rows: Row[], views: ViewtronViews[]) {
+    const defaultHeights = filter(rows, ({height}) => !height);
+    const overriddenHeights = filter(rows, 'height');
+    let remainingDefaultHeight = minXInt(
+        mainRect.height - sumBy(overriddenHeights, ({height}) => minXInt(getPixelValue(config, mainRect.height, height!), config.minHeight)),
+        config.minHeight
+    );
+    let currY = mainRect.y || 0;
 
-    return map(views, (view): ViewOption => {
-        if (view.rectOverride) {
-            const x = currX + VIEW_RECT_SPACING;
+    return flatMap(rows, (row, rowIndex) => {
+        const {columns, height} = row;
+        const defaultRowHeights = minXInt((remainingDefaultHeight / defaultHeights.length) - (config.spacing * 2), config.minHeight);
+        const finalRowHeight = height ? getPixelValue(config, mainRect.height, height) : defaultRowHeights;
+        const defaultColumnWidths = filter(columns, ({width}) => !width);
+        const overriddenColumnWidths = filter(columns, 'width');
+        let remainingDefaultColumnWidth = minXInt(
+            mainRect.width - sumBy(overriddenColumnWidths, ({width}) => minXInt(getPixelValue(config, mainRect.width, width!), config.minWidth)),
+            config.minWidth
+        );
+        let currX = mainRect.x || 0;
 
-            currX += (VIEW_RECT_SPACING * 2) + view.rectOverride.width;
+        const rowViews = flatMap(columns, (column, columnIndex) => {
+            let currColumnY = currY;
+            const columnViews = filter(views, (view) => view.rowIndex === rowIndex && view.columnIndex === columnIndex);
+            const defaultViewHeights = filter(columnViews, ({height}) => !height);
+            const overriddenViewHeights = filter(columnViews, 'height');
+            let remainingDefaultViewHeight = minXInt(
+                finalRowHeight - sumBy(overriddenViewHeights, ({height}) => minXInt(getPixelValue(config, finalRowHeight, height!), config.minHeight)),
+                config.minHeight
+            );
+            const x = currX + config.spacing;
+            const defaultViewHeight = minXInt(
+                (remainingDefaultViewHeight / defaultViewHeights.length) - (config.spacing * 2),
+                config.minHeight
+            );
+            const defaultColumnWidth = minXInt(
+                (remainingDefaultColumnWidth / defaultColumnWidths.length) - (config.spacing * 2),
+                config.minWidth
+            );
+            const finalColumnWidth = minXInt(
+                column.width ? getPixelValue(config, mainRect.width, column.width) : defaultColumnWidth,
+                config.minWidth
+            );
 
-            return {
-                ...view,
-                rectOverride: {
-                    width: min50Int(view.rectOverride.width),
-                    height: min5Int(mainRect.height),
-                    x: min5Int(x),
-                    y: min5Int(mainRect.y)
-                }
-            }
-        }
+            currX += (config.spacing * 2) + finalColumnWidth;
 
-        const x = currX + VIEW_RECT_SPACING;
-        const width = min50Int((remainingDefaultWidth / defaults.length) - (VIEW_RECT_SPACING * 2));
+            return map(columnViews, (view) => {
+                const y = currColumnY + config.spacing;
+                // @todo: height harmonization logic
+                const finalViewHeight = view.height ? getPixelValue(config, finalRowHeight, view.height) : defaultViewHeight;
+                currColumnY += (config.spacing * 2) + finalViewHeight;
 
-        currX += (VIEW_RECT_SPACING * 2) + width;
+                return {
+                    ...view,
+                    rect: {
+                        x: minXInt(x, config.spacing),
+                        y: minXInt(y, config.spacing),
+                        width: minXInt(finalColumnWidth, config.minWidth),
+                        height: minXInt(finalViewHeight, config.minHeight),
+                    }
+                };
+            });
+        });
 
-        return {
-            ...view,
-            rect: {
-                ...view.rect,
-                height: min5Int(mainRect.height),
-                width: min5Int(width),
-                x: min5Int(x),
-                y: min5Int(mainRect.y)
-            }
-        }
-    })
+        currY += (config.spacing * 2) + finalRowHeight;
+
+        return rowViews;
+    });
+
 }
 
-function min50Int(num: number) {
-    return Math.floor(Math.max(num, MIN_WIDTH));
+function getPixelValue(config: ViewtronConfig, base: number, target: number) {
+    if (config.responsive) {
+        return base * target;
+    }
+
+    return target;
 }
 
-function min5Int(num: number) {
-    return Math.floor(Math.max(num, 5));
+export function getOverrideValue(config: ViewtronConfig, base: number, target: number) {
+    if (config.responsive) {
+        return target / base;
+    }
+
+    return target;
+}
+
+function minXInt(num: number, min: number) {
+    return Math.floor(Math.max(num, min));
 }

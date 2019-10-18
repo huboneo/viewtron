@@ -1,26 +1,27 @@
 import {actionCreatorFactory} from 'conduxion';
-import {forEach, debounce, assign, reduce, values} from 'lodash';
+import {forEach, throttle, assign, reduce, values} from 'lodash';
 
-import {AppActionMould, ViewOption} from '../state';
+import {AppActionMould, Row} from '../state';
+import {ViewtronViews} from '../../types';
 
 import {VIEWS_UPDATED_MESSAGE} from '../../constants';
 import calculateNewViewRects from '../utils';
 
-const debouncedEmitter = debounce((mainWindow, viewOptions: ViewOption[]) => {
-    mainWindow.webContents.send(VIEWS_UPDATED_MESSAGE, Object.values(viewOptions));
-}, 300);
+const throttledEmitter = throttle((mainWindow, rows: Row[], views: ViewtronViews[]) => {
+    mainWindow.webContents.send(VIEWS_UPDATED_MESSAGE, {rows, views});
+}, 200, {leading: true, trailing: true}); // @todo: leading false?
 
 export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
 
 export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
     type: 'UPDATE_VIEWS',
     reducer(state) {
-        const {currentAppAreaRect, viewOptions} = state;
+        const {config, currentAppAreaRect, rows, viewOptions} = state;
         const views = values(viewOptions);
 
         if (!currentAppAreaRect) return state;
 
-        const updatedViews = calculateNewViewRects(currentAppAreaRect, views);
+        const updatedViews = calculateNewViewRects(config, currentAppAreaRect, rows, views);
 
         return {
             ...state,
@@ -28,18 +29,17 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
         }
     },
     consequence({getState}) {
-        const {activeViews, mainWindow, viewOptions} = getState();
+        const {activeViews, mainWindow, viewOptions, rows} = getState();
         const views = values(viewOptions);
 
-        forEach(views, ({id, rect, rectOverride}) => {
+        forEach(views, ({id, rect}) => {
             const view = activeViews[id];
 
-            if (!view || (!rect && !rectOverride)) return;
+            if (!view || !rect) return;
 
-            // @ts-ignore
-            view.setBounds(rectOverride || rect);
+            view.setBounds(rect);
         });
 
-        debouncedEmitter(mainWindow, Object.values(viewOptions));
+        throttledEmitter(mainWindow, rows, values(viewOptions));
     }
 });

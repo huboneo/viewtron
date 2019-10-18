@@ -1,21 +1,21 @@
-import {BrowserWindow, BrowserView, Rectangle} from 'electron'
+import {BrowserWindow, BrowserView, Rectangle} from 'electron';
 import {ConduxionAction, ConduxionActionMould, makeStore, RootReducer} from 'conduxion';
 
-export type ViewOption = {
-    id: string;
-    path: string;
-    name: string;
-    rect?: Rectangle;
-    rectOverride?: Rectangle;
-    options?: any
-}
-export type ViewOptions = { [key: string]: ViewOption };
+import {ViewtronViews, ViewtronConfig} from '../types';
+
+import {DEFAULT_CONFIG} from '../constants';
+
+export type ViewOptions = { [key: string]: ViewtronViews };
 export type ActiveViews = { [key: string]: BrowserView };
+export type Column = { name?: string, width?: number };
+export type Row = { name?: string, height?: number , columns: Column[]};
 export type AppDependencies = {};
 export type AppState = {
+    config: ViewtronConfig
     mainWindow: BrowserWindow | null
     currentAppAreaRect: Rectangle | null
     viewOptions: ViewOptions
+    rows: Row[]
     activeViews: ActiveViews
 }
 export type AppActionMould<T extends string, P> = ConduxionActionMould<T,
@@ -24,7 +24,14 @@ export type AppActionMould<T extends string, P> = ConduxionActionMould<T,
     AppDependencies>
 
 type AppAction = ConduxionAction<AppState, AppDependencies>
-const INITIAL_APP_STATE: AppState = {mainWindow: null, currentAppAreaRect: null, viewOptions: {}, activeViews: {}};
+const INITIAL_APP_STATE: AppState = {
+    config: DEFAULT_CONFIG,
+    mainWindow: null,
+    currentAppAreaRect: null,
+    rows: [],
+    viewOptions: {},
+    activeViews: {}
+};
 
 const rootReducer: RootReducer<AppState, AppAction, AppDependencies> = (state = INITIAL_APP_STATE, action) => action.reducer
     ? action.reducer(state, action.payload)

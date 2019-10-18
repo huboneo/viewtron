@@ -1,8 +1,9 @@
 import {ipcRenderer} from 'electron';
 
-import {VIEWS_UPDATED_MESSAGE} from '../constants';
-import {ViewOption} from '../ipc-main/state';
+import {ViewtronUpdateData} from '../types';
 
-export default function viewsUpdatedHandler(callback: (views: ViewOption[]) => void) {
-    ipcRenderer.on(VIEWS_UPDATED_MESSAGE, (_, views: ViewOption[]) => callback(views));
+import {VIEWS_UPDATED_MESSAGE} from '../constants';
+
+export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateData) => void) {
+    ipcRenderer.on(VIEWS_UPDATED_MESSAGE, (_, update: ViewtronUpdateData) => callback(update));
 }

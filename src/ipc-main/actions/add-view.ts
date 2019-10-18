@@ -1,11 +1,12 @@
 import {BrowserView} from 'electron';
 import {actionCreatorFactory} from 'conduxion';
 
-import {AppActionMould, ViewOption} from '../state';
+import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
+import {ViewtronViews} from '../../types';
 
-type AddViewOptionPayload = ViewOption
+type AddViewOptionPayload = ViewtronViews
 
 export type AddViewOptionAction = AppActionMould<'ADD_VIEW', AddViewOptionPayload>
 
@@ -13,14 +14,14 @@ export const [addView] = actionCreatorFactory<AddViewOptionAction>({
     type: 'ADD_VIEW',
     reducer(state, payload) {
         const {mainWindow, viewOptions} = state;
-        const {id, path} = payload;
+        const {id, url} = payload;
 
         if (!mainWindow || viewOptions[id]) return state;
 
         const view = new BrowserView();
 
         mainWindow.addBrowserView(view);
-        view.webContents.loadURL(path);
+        view.webContents.loadURL(url);
 
         return {
             ...state,
