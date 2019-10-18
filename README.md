@@ -192,12 +192,3 @@ import {Rectangle} from 'electron';
 
 export default function viewResizeHandler(id: string, rect: Rectangle): void
 ```
-
-#### viewResizeHandler
-Sends new dimensions for a specific view instance. Currently only for `width`.
-
-```typescript
-import {Rectangle} from 'electron';
-
-export default function viewResizeHandler(id: string, rect: Rectangle): void
-```
