@@ -1,0 +1,43 @@
+{
+  "name": "viewtron",
+  "version": "0.1.0",
+  "description": "Electron browser view management",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huboneo/viewtron.git"
+  },
+  "keywords": [
+    "electron",
+    "browserview",
+    "multi",
+    "nested",
+    "views"
+  ],
+  "author": "huboneo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huboneo/viewtron/issues"
+  },
+  "homepage": "https://github.com/huboneo/viewtron#readme",
+  "devDependencies": {
+    "@types/lodash": "4.14.144",
+    "@types/uuid": "3.4.5",
+    "electron": "6.0.12",
+    "typescript": "3.6.4"
+  },
+  "peerDependencies": {
+    "electron": "> 6"
+  },
+  "dependencies": {
+    "conduxion": "1.0.7",
+    "lodash": "4.17.15",
+    "redux": "4.0.4",
+    "uuid": "3.3.3"
+  }
+}
