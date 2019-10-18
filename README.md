@@ -5,7 +5,8 @@ Allows for multiple [electron browser view](https://electronjs.org/docs/api/brow
 - [Installation](#installation)
 - [Usage](#usage)
 - [API](#api)
-- [Types](#types)
+
+---
 
 ## Installation
 ```
@@ -13,8 +14,9 @@ $ npm i -S viewtron
 ```
 Please note that [`electron`](https://electronjs.org) is a peer-dependency.
 
-## Usage
+---
 
+## Usage
 ### Main Process:
 ```typescript
 import {BrowserWindow} from 'electron'
@@ -103,4 +105,99 @@ window.addEventListener("DOMContentLoaded", () => {
         viewResizeHandler(viewId, newRect);
     });
 });
+```
+
+---
+
+## API
+### Main Process
+- [addMainWindowHandlers](#addmainwindowhandlers)
+- [addViewtronAreaHandlers](#addviewtronareahandlers)
+- [addViewInstanceHandlers](#addviewinstancehandlers)
+
+#### addMainWindowHandlers
+Applies handlers to the main electron window instance. Should be called on each new main window instance
+
+```typescript
+import {BrowserWindow} from 'electron'
+
+export type addMainWindowHandlers = (mainWindow: BrowserWindow) => void
+```
+
+#### addViewtronAreaHandlers
+Applies handlers for the main Viewtron area in which views are displayed. Should only be applied once per main process,
+
+```typescript
+export type addViewtronAreaHandlers = () => void
+```
+
+#### addViewInstanceHandlers
+Applies handlers for the each Viewtron BrowserView instance. Should only be applied once per main process.
+
+```typescript
+export type addViewInstanceHandlers = () => void
+```
+
+### Preload process
+Could also be done in the renderer process
+- [initHandler](#inithandler)
+- [addViewHandler](#addviewhandler)
+- [removeViewHandler](#removeviewhandler)
+- [viewsUpdatedHandler](#viewsupdatedhandler)
+- [viewResetHandler](#viewresethandler)
+- [viewResizeHandler](#viewresizehandler)
+
+#### initHandler
+Binds viewtron to a specific DOM element in which views will be shown and initializes any preloaded views.
+
+```typescript
+export default function initHandler(viewtronAreaElement: HTMLElement): void
+```
+
+#### addViewHandler
+Adds a view instance.
+
+```typescript
+export default function addViewHandler(url: string): void
+```
+
+#### removeViewHandler
+Removes a view instance.
+
+```typescript
+export default function removeViewHandler(id: string): void
+```
+
+#### viewsUpdatedHandler
+Calls supplied callback whenever views are updated in main process. Passes updated view data.
+
+```typescript
+import {ViewOption} from 'viewtron';
+
+export default function viewsUpdatedHandler(callback: (views: ViewOption[]) => void): void
+```
+
+#### viewResetHandler
+Resets all views, or a specified to default widths.
+
+```typescript
+export default function viewResetHandler(id?: string): void
+```
+
+#### viewResizeHandler
+Sends new dimensions for a specific view instance. Currently only for `width`.
+
+```typescript
+import {Rectangle} from 'electron';
+
+export default function viewResizeHandler(id: string, rect: Rectangle): void
+```
+
+#### viewResizeHandler
+Sends new dimensions for a specific view instance. Currently only for `width`.
+
+```typescript
+import {Rectangle} from 'electron';
+
+export default function viewResizeHandler(id: string, rect: Rectangle): void
 ```

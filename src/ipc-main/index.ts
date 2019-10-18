@@ -20,9 +20,9 @@ import {
 import state, {ViewOption} from './state';
 
 export {ViewOption};
-export const addMainWindowHandlers = (main: BrowserWindow) => state.dispatch(setMainWindow(main));
+export const addMainWindowHandlers = (mainWindow: BrowserWindow) => state.dispatch(setMainWindow(mainWindow));
 
-export const addViewAreaHandlers = () => {
+export const addViewtronAreaHandlers = () => {
     ipcMain.on(VIEW_AREA_INIT_MESSAGE, (_, rect) => {
         if (!rect) return;
 
@@ -36,7 +36,7 @@ export const addViewAreaHandlers = () => {
     })
 };
 
-export const addCreateDestroyViewHandlers = () => {
+export const addViewInstanceHandlers = () => {
     ipcMain.on(ADD_VIEW_MESSAGE, (_, path) => {
         if (!path) return;
 
