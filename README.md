@@ -1,5 +1,6 @@
 # Viewtron
 Allows for multiple [electron browser view](https://electronjs.org/docs/api/browser-view) inside a parent application.
+See [viewtron-sample-app](https://github.com/huboneo/viewtron-sample-app) for a small usage example.
 
 ## Table of Contents
 - [Installation](#installation)
