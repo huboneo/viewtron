@@ -44,7 +44,7 @@ export type AddViewData = {
 }
 
 export type RemoveViewData = {
-    id: string
+    viewId: string
 }
 
 export type ViewResetData = {

@@ -17,7 +17,7 @@ export const SET_ROW_OVERRIDE_OVERRIDE_MESSAGE = 'VIEWTRON_SET_ROW_OVERRIDE_OVER
 export const VIEWS_UPDATED_MESSAGE = 'VIEWTRON_VIEWS_UPDATED_MESSAGE';
 
 export const DEFAULT_CONFIG: ViewtronConfig = {
-    spacing: 5,
+    spacing: 10,
     minWidth: 50,
     minHeight: 50,
     responsive: true

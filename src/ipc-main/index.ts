@@ -36,7 +36,7 @@ import {
     AddColumnData,
     AddRowData,
     AddViewData,
-    ColumnResizeData, RemoveColumnData, RemoveRowData,
+    ColumnResizeData, RemoveColumnData, RemoveRowData, RemoveViewData,
     RowResizeData, ViewResetData,
     ViewResizeData,
     ViewtronConfig
@@ -114,9 +114,7 @@ export const addViewInstanceHandlers = () => {
         state.dispatch(resetViewHeights({viewIds}));
     });
 
-    ipcMain.on(REMOVE_VIEW_MESSAGE, (_, id) => {
-        if (!id) return;
-
-        state.dispatch(removeView(id));
+    ipcMain.on(REMOVE_VIEW_MESSAGE, (_, data: RemoveViewData) => {
+        state.dispatch(removeView(data));
     });
 };
