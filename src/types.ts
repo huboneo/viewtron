@@ -1,5 +1,5 @@
 import {Rectangle} from 'electron';
-import {Row} from './ipc-main/state';
+import {Column, Row} from './ipc-main/state';
 
 export type ViewtronConfig = {
     spacing: number,
@@ -8,26 +8,24 @@ export type ViewtronConfig = {
     responsive: boolean,
 }
 
-export type ViewtronViews = {
+export type ViewtronView = {
     id: string;
     url: string;
     name?: string;
-    columnIndex: number;
-    rowIndex: number;
+    columnId: string;
     rect?: Rectangle;
     height?: number;
     options?: any
 }
 
 export type AddColumnData = {
-    rowIndex: number,
+    rowId: string,
     name?: string,
     width?: number
 }
 
 export type RemoveColumnData = {
-    rowIndex: number,
-    columnIndex: number
+    columnId: string
 }
 
 export type AddRowData = {
@@ -35,21 +33,31 @@ export type AddRowData = {
     height?: number
 }
 
+export type RemoveRowData = {
+    rowId: string
+}
+
 export type AddViewData = {
     url: string,
-    columnIndex: number,
-    rowIndex: number,
+    columnId: string
     name?: string
 }
 
+export type RemoveViewData = {
+    id: string
+}
+
+export type ViewResetData = {
+    viewIds?: string[]
+}
+
 export type ColumnResizeData = {
-    columnIndex: number,
-    rowIndex: number,
+    columnId: string
     width: number
 }
 
 export type RowResizeData = {
-    rowIndex: number,
+    rowId: string,
     height: number
 }
 
@@ -60,5 +68,6 @@ export type ViewResizeData = {
 
 export type ViewtronUpdateData = {
     rows: Row[]
-    views: ViewtronViews[];
+    columns: Column[]
+    views: ViewtronView[]
 }

@@ -215,7 +215,9 @@ export default function addRowHandler(data: AddRowData): void
 Removes a row from the viewtron area.
 
 ```typescript
-export default function removeRowHandler(rowIndex: number): void
+import {RemoveRowData} from 'viewtron';
+
+export default function removeRowHandler(data: RemoveRowData): void
 ```
 
 #### rowResizeHandler
@@ -258,14 +260,18 @@ export default function columnResizeHandler(data: ColumnResizeData): void
 Adds a view instance.
 
 ```typescript
-export default function addViewHandler(url: string): void
+import {AddViewData} from 'viewtron';
+
+export default function addViewHandler(data: AddViewData): void
 ```
 
 #### removeViewHandler
 Removes a view instance.
 
 ```typescript
-export default function removeViewHandler(id: string): void
+import {RemoveViewData} from 'viewtron';
+
+export default function removeViewHandler(data: RemoveViewData): void
 ```
 
 #### viewResizeHandler
@@ -274,7 +280,7 @@ Sets height for a specific view instance.
 ```typescript
 import {ViewResizeData} from 'viewtron';
 
-export default function viewResizeHandler({id, height}: ViewResizeData): void
+export default function viewResizeHandler(data: ViewResizeData): void
 ```
 
 #### viewsUpdatedHandler
@@ -290,6 +296,8 @@ export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateDat
 Resets all views, or a specified view, to default dimensions.
 
 ```typescript
-export default function viewResetHandler(id?: string): void
+import {ViewResetData} from 'viewtron';
+
+export default function viewResetHandler(data: ViewResetData): void
 ```
 

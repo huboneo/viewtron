@@ -1,21 +1,21 @@
 import {BrowserWindow, BrowserView, Rectangle} from 'electron';
 import {ConduxionAction, ConduxionActionMould, makeStore, RootReducer} from 'conduxion';
 
-import {ViewtronViews, ViewtronConfig} from '../types';
+import {ViewtronView, ViewtronConfig} from '../types';
 
 import {DEFAULT_CONFIG} from '../constants';
 
-export type ViewOptions = { [key: string]: ViewtronViews };
 export type ActiveViews = { [key: string]: BrowserView };
-export type Column = { name?: string, width?: number };
-export type Row = { name?: string, height?: number , columns: Column[]};
+export type Column = { id: string, rowId: string, name?: string, width?: number };
+export type Row = { id: string, name?: string, height?: number };
 export type AppDependencies = {};
 export type AppState = {
     config: ViewtronConfig
     mainWindow: BrowserWindow | null
     currentAppAreaRect: Rectangle | null
-    viewOptions: ViewOptions
+    views: ViewtronView[]
     rows: Row[]
+    columns: Column[]
     activeViews: ActiveViews
 }
 export type AppActionMould<T extends string, P> = ConduxionActionMould<T,
@@ -29,7 +29,8 @@ const INITIAL_APP_STATE: AppState = {
     mainWindow: null,
     currentAppAreaRect: null,
     rows: [],
-    viewOptions: {},
+    columns: [],
+    views: [],
     activeViews: {}
 };
 

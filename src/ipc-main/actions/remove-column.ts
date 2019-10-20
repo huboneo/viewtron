@@ -1,38 +1,36 @@
 import {actionCreatorFactory} from 'conduxion';
-import {filter, values, forEach} from 'lodash';
+import {filter, forEach} from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 import {removeView} from './remove-view';
 
-type RemoveColumnPayload = { rowIndex: number, columnIndex: number };
+type RemoveColumnPayload = { columnId: string };
 
 export type RemoveColumnAction = AppActionMould<'REMOVE_COLUMN', RemoveColumnPayload>
 
 export const [removeColumn] = actionCreatorFactory<RemoveColumnAction>({
     type: 'REMOVE_COLUMN',
     reducer(state, payload) {
-        const {rows} = state;
-        const {rowIndex, columnIndex} = payload;
+        const {columns} = state;
+        const {columnId} = payload;
 
-        if (!rows[rowIndex] || !rows[rowIndex].columns[columnIndex]) return state;
-
-        // @todo: immer
-        rows[rowIndex].columns = filter(rows[rowIndex].columns, (_, index) => index !== columnIndex);
-
-        return state;
+        return {
+            ...state,
+            columns: filter(columns, ({id}) => id !== columnId)
+        };
     },
     consequence({dispatch, getState, action}) {
         const {payload} = action;
-        const {viewOptions} = getState();
-        const views = filter(
-            values(viewOptions),
-            ({rowIndex, columnIndex}) => columnIndex === payload.columnIndex && rowIndex === payload.rowIndex
+        const {views} = getState();
+        const columnViews = filter(
+            views,
+            ({columnId}) => columnId === payload.columnId
         );
 
         // @todo: cleanup
-        forEach(views, ({id}) => dispatch(removeView(id)));
+        forEach(columnViews, ({id}) => dispatch(removeView({viewId: id})));
 
         dispatch(updateViews());
     }

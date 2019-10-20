@@ -1,11 +1,11 @@
 import {Rectangle} from 'electron';
 import {filter, map, sumBy, flatMap} from 'lodash';
 
-import {ViewtronViews, ViewtronConfig} from '../types';
+import {ViewtronView, ViewtronConfig} from '../types';
 
-import {Row} from './state';
+import {Row, Column} from './state';
 
-export default function calculateViewRects(config: ViewtronConfig, mainRect: Rectangle, rows: Row[], views: ViewtronViews[]) {
+export default function calculateViewRects(config: ViewtronConfig, mainRect: Rectangle, rows: Row[], columns: Column[], views: ViewtronView[]) {
     const defaultHeights = filter(rows, ({height}) => !height);
     const overriddenHeights = filter(rows, 'height');
     let remainingDefaultHeight = minXInt(
@@ -14,21 +14,22 @@ export default function calculateViewRects(config: ViewtronConfig, mainRect: Rec
     );
     let currY = mainRect.y || 0;
 
-    return flatMap(rows, (row, rowIndex) => {
-        const {columns, height} = row;
+    return flatMap(rows, (row) => {
+        const {height} = row;
+        const rowColumns = filter(columns, ({rowId}) => rowId === row.id);
         const defaultRowHeights = minXInt((remainingDefaultHeight / defaultHeights.length) - (config.spacing * 2), config.minHeight);
         const finalRowHeight = height ? getPixelValue(config, mainRect.height, height) : defaultRowHeights;
-        const defaultColumnWidths = filter(columns, ({width}) => !width);
-        const overriddenColumnWidths = filter(columns, 'width');
+        const defaultColumnWidths = filter(rowColumns, ({width}) => !width);
+        const overriddenColumnWidths = filter(rowColumns, 'width');
         let remainingDefaultColumnWidth = minXInt(
             mainRect.width - sumBy(overriddenColumnWidths, ({width}) => minXInt(getPixelValue(config, mainRect.width, width!), config.minWidth)),
             config.minWidth
         );
         let currX = mainRect.x || 0;
 
-        const rowViews = flatMap(columns, (column, columnIndex) => {
+        const rowViews = flatMap(rowColumns, (column) => {
             let currColumnY = currY;
-            const columnViews = filter(views, (view) => view.rowIndex === rowIndex && view.columnIndex === columnIndex);
+            const columnViews = filter(views, (view) => view.columnId === column.id);
             const defaultViewHeights = filter(columnViews, ({height}) => !height);
             const overriddenViewHeights = filter(columnViews, 'height');
             let remainingDefaultViewHeight = minXInt(

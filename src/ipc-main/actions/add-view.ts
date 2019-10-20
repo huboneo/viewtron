@@ -4,19 +4,19 @@ import {actionCreatorFactory} from 'conduxion';
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
-import {ViewtronViews} from '../../types';
+import {ViewtronView} from '../../types';
 
-type AddViewOptionPayload = ViewtronViews
+type AddViewPayload = ViewtronView
 
-export type AddViewOptionAction = AppActionMould<'ADD_VIEW', AddViewOptionPayload>
+export type AddViewAction = AppActionMould<'ADD_VIEW', AddViewPayload>
 
-export const [addView] = actionCreatorFactory<AddViewOptionAction>({
+export const [addView] = actionCreatorFactory<AddViewAction>({
     type: 'ADD_VIEW',
     reducer(state, payload) {
-        const {mainWindow, viewOptions} = state;
+        const {mainWindow, views} = state;
         const {id, url} = payload;
 
-        if (!mainWindow || viewOptions[id]) return state;
+        if (!mainWindow) return state;
 
         const view = new BrowserView();
 
@@ -25,10 +25,10 @@ export const [addView] = actionCreatorFactory<AddViewOptionAction>({
 
         return {
             ...state,
-            viewOptions: {
-                ...viewOptions,
-                [id]: payload
-            },
+            views: [
+                ...views,
+                 payload
+            ],
             activeViews: {
                 ...state.activeViews,
                 [id]: view

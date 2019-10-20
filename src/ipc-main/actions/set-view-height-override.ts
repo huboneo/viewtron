@@ -1,32 +1,28 @@
 import {actionCreatorFactory} from 'conduxion';
+import { find } from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 import {getOverrideValue} from '../utils';
 
-type SetViewHeightOverridePayload = { id: string, height: number };
+type SetViewHeightOverridePayload = { viewId: string, height: number };
 
 export type SetViewHeightOverrideAction = AppActionMould<'SET_VIEW_HEIGHT_OVERRIDE', SetViewHeightOverridePayload>
 
 export const [setViewHeightOverride] = actionCreatorFactory<SetViewHeightOverrideAction>({
     type: 'SET_VIEW_HEIGHT_OVERRIDE',
     reducer(state, payload) {
-        const {config, currentAppAreaRect, viewOptions} = state;
-        const {id, height} = payload;
+        const {config, currentAppAreaRect, views} = state;
+        const {viewId, height} = payload;
+        const toSet = find(views, ({id}) => id === viewId);
 
-        if (!currentAppAreaRect || !viewOptions[id]) return state;
+        if (!currentAppAreaRect || !toSet) return state;
 
-        return {
-            ...state,
-            viewOptions: {
-                ...viewOptions,
-                [id]: {
-                    ...viewOptions[id],
-                    height: getOverrideValue(config, currentAppAreaRect.height, height)
-                }
-            }
-        }
+        // @todo: immer
+        toSet.height = getOverrideValue(config, currentAppAreaRect.height, height);
+
+        return state;
     },
     consequence({dispatch}) {
         dispatch(updateViews());

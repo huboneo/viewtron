@@ -1,39 +1,37 @@
 import {actionCreatorFactory} from 'conduxion';
-import {assign, entries, reduce, omit} from 'lodash';
+import {omit, includes, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type ResetViewHeightsPayload = { id?: string };
+type ResetViewHeightsPayload = { viewIds?: string[] };
 
 export type ResetViewHeightsAction = AppActionMould<'RESET_VIEW_HEIGHTS', ResetViewHeightsPayload>
 
 export const [resetViewHeights] = actionCreatorFactory<ResetViewHeightsAction>({
     type: 'RESET_VIEW_HEIGHTS',
     reducer(state, payload) {
-        const {viewOptions} = state;
-        const {id} = payload;
+        const {views} = state;
+        const {viewIds = []} = payload;
 
-        // @todo: rows/columns
-        if (id && !viewOptions[id]) return state;
-
-        if (id) {
+        if (payload.viewIds) {
             return {
                 ...state,
-                viewOptions: {
-                    ...viewOptions,
-                    [id]: omit(viewOptions[id], 'height')
-                }
+                views: map(
+                    views,
+                    (view) => includes(viewIds, view.id)
+                        ? omit(view, 'height')
+                        : view
+                )
             }
         }
 
         return {
             ...state,
-            viewOptions: reduce(
-                entries(viewOptions),
-                (agg, [key, val]) => assign(agg, {[key]: omit(val, 'height')}),
-                {}
+            views: map(
+                views,
+                (view) => omit(view, 'height')
             )
         };
     },

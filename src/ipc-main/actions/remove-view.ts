@@ -1,19 +1,20 @@
 import {actionCreatorFactory} from 'conduxion';
-import {omit} from 'lodash';
+import {omit, filter} from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type RemoveViewPayload = string
+type RemoveViewPayload = {viewId: string}
 
 export type RemoveViewAction = AppActionMould<'REMOVE_VIEW', RemoveViewPayload>
 
 export const [removeView] = actionCreatorFactory<RemoveViewAction>({
     type: 'REMOVE_VIEW',
     reducer(state, payload) {
+        const {viewId} = payload;
         const {mainWindow, activeViews} = state;
-        const view = activeViews[payload];
+        const view = activeViews[viewId];
 
         if (mainWindow && view) {
             mainWindow.removeBrowserView(view);
@@ -22,8 +23,8 @@ export const [removeView] = actionCreatorFactory<RemoveViewAction>({
 
         return {
             ...state,
-            viewOptions: omit(state.viewOptions, payload),
-            activeViews: omit(state.activeViews, payload)
+            views: filter(state.views, ({id}) => id !== viewId),
+            activeViews: omit(state.activeViews, viewId)
         }
     },
     consequence({dispatch}) {

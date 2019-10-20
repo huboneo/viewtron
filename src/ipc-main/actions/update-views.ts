@@ -1,14 +1,14 @@
 import {actionCreatorFactory} from 'conduxion';
-import {forEach, throttle, assign, reduce, values} from 'lodash';
+import {forEach, throttle} from 'lodash';
 
-import {AppActionMould, Row} from '../state';
-import {ViewtronViews} from '../../types';
+import {AppActionMould} from '../state';
+import {ViewtronUpdateData} from '../../types';
 
 import {VIEWS_UPDATED_MESSAGE} from '../../constants';
-import calculateNewViewRects from '../utils';
+import recalculateViews from '../utils';
 
-const throttledEmitter = throttle((mainWindow, rows: Row[], views: ViewtronViews[]) => {
-    mainWindow.webContents.send(VIEWS_UPDATED_MESSAGE, {rows, views});
+const throttledEmitter = throttle((mainWindow, data: ViewtronUpdateData) => {
+    mainWindow.webContents.send(VIEWS_UPDATED_MESSAGE, data);
 }, 200, {leading: true, trailing: true}); // @todo: leading false?
 
 export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
@@ -16,21 +16,17 @@ export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
 export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
     type: 'UPDATE_VIEWS',
     reducer(state) {
-        const {config, currentAppAreaRect, rows, viewOptions} = state;
-        const views = values(viewOptions);
+        const {config, currentAppAreaRect, rows, columns, views} = state;
 
         if (!currentAppAreaRect) return state;
 
-        const updatedViews = calculateNewViewRects(config, currentAppAreaRect, rows, views);
-
         return {
             ...state,
-            viewOptions: reduce(updatedViews, (agg, view) => assign(agg, {[view.id]: view}), {})
+            views: recalculateViews(config, currentAppAreaRect, rows, columns, views)
         }
     },
     consequence({getState}) {
-        const {activeViews, mainWindow, viewOptions, rows} = getState();
-        const views = values(viewOptions);
+        const {activeViews, mainWindow, views, rows, columns} = getState();
 
         forEach(views, ({id, rect}) => {
             const view = activeViews[id];
@@ -40,6 +36,6 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
             view.setBounds(rect);
         });
 
-        throttledEmitter(mainWindow, rows, values(viewOptions));
+        throttledEmitter(mainWindow, {rows, columns, views});
     }
 });
