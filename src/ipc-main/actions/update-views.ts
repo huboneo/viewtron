@@ -9,7 +9,7 @@ import recalculateViews from '../utils';
 
 const throttledEmitter = throttle((mainWindow, data: ViewtronUpdateData) => {
     mainWindow.webContents.send(VIEWTRON_UPDATE_MESSAGE, data);
-}, 200, {leading: true, trailing: true}); // @todo: leading false?
+}, 200, {trailing: true}); // @todo: leading false?
 
 export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
 

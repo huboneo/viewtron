@@ -4,16 +4,16 @@ import {assign} from 'lodash';
 
 import {setConfig} from './actions/set-config';
 import {addView} from './actions/add-view';
-import {removeView} from './actions/remove-view';
+import {removeViews} from './actions/remove-views';
 import {setAreaRect} from './actions/set-area-rect';
 import {setMainWindow} from './actions/set-main-window';
 import {setViewHeightOverride} from './actions/set-view-height-override';
 import {resetViewHeights} from './actions/reset-view-heights';
 import {addColumn} from './actions/add-column';
-import {removeColumn} from './actions/remove-column';
+import {removeColumns} from './actions/remove-columns';
 import {setColumnWidthOverride} from './actions/set-column-width-override';
 import {addRow} from './actions/add-row';
-import {removeRow} from './actions/remove-row';
+import {removeRows} from './actions/remove-rows';
 import {setRowHeightOverride} from './actions/set-row-height-override';
 import {resetColumnWidths} from './actions/reset-column-widths';
 import {resetRowHeights} from './actions/reset-row-heights';
@@ -77,7 +77,7 @@ export const addViewtronAreaHandlers = () => {
     ipcMain.on(VIEW_REMOVE_ROW_MESSAGE, (_, {rowId}: RemoveRowData) => {
         if (typeof rowId !== 'string') return;
 
-        state.dispatch(removeRow({rowId}));
+        state.dispatch(removeRows({rowIds: [rowId]}));
     });
 
     ipcMain.on(SET_ROW_HEIGHTS_OVERRIDE_MESSAGE, (_, {rowId, height}: RowResizeData) => {
@@ -99,7 +99,7 @@ export const addViewtronAreaHandlers = () => {
     ipcMain.on(VIEW_REMOVE_COLUMN_MESSAGE, (_, {columnId}: RemoveColumnData) => {
         if (typeof columnId !== 'string') return;
 
-        state.dispatch(removeColumn({columnId}));
+        state.dispatch(removeColumns({columnIds: [columnId]}));
     });
 
     ipcMain.on(SET_COLUMN_WIDTHS_OVERRIDE_MESSAGE, (_, {columnId, width}: ColumnResizeData) => {
@@ -130,7 +130,7 @@ export const addViewInstanceHandlers = () => {
         state.dispatch(resetViewHeights({viewIds}));
     });
 
-    ipcMain.on(REMOVE_VIEW_MESSAGE, (_, data: RemoveViewData) => {
-        state.dispatch(removeView(data));
+    ipcMain.on(REMOVE_VIEW_MESSAGE, (_, {viewId}: RemoveViewData) => {
+        state.dispatch(removeViews({viewIds: [viewId]}));
     });
 };

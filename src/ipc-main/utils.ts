@@ -17,9 +17,12 @@ export default function calculateViewRects(config: ViewtronConfig, mainRect: Rec
         const {height} = row;
         const rowColumns = filter(columns, ({rowId}) => rowId === row.id);
         const defaultRowHeight = minXInt(remainingDefaultHeight / defaultRows.length, config.minHeight);
-        const finalRowHeight = height
+        const calculatedRowHeight = height
             ? getPixelValue(config, mainRect.height, height)
             : defaultRowHeight;
+        const finalRowHeight = rowIndex !== rows.length - 1
+            ? calculatedRowHeight - config.spacing
+            : calculatedRowHeight;
         const defaultColumns = filter(rowColumns, ({width}) => !width);
         const overriddenColumns = filter(rowColumns, 'width');
         const remainingDefaultColumnWidth = minXInt(
@@ -52,30 +55,30 @@ export default function calculateViewRects(config: ViewtronConfig, mainRect: Rec
                     : defaultColumnWidth,
                 config.minWidth
             );
-            const finalWidth = columnIndex !== rowColumns.length - 1
+            const finalColumnWidth = columnIndex !== rowColumns.length - 1
                 ? calculatedColumnWidth - config.spacing
                 : calculatedColumnWidth;
 
-            currX += finalWidth + config.spacing;
+            currX += finalColumnWidth + config.spacing;
 
-            return map(columnViews, (view) => {
+            return map(columnViews, (view, viewIndex) => {
                 const y = currColumnY;
                 const calculatedViewHeight = view.height
                     ? getPixelValue(config, finalRowHeight, view.height)
                     : defaultViewHeight;
-                const finalHeight = rowIndex !== rows.length - 1
-                    ? calculatedViewHeight
+                const finalViewHeight = viewIndex !== columnViews.length - 1
+                    ? calculatedViewHeight - config.spacing
                     : calculatedViewHeight;
 
-                currColumnY += finalHeight;
+                currColumnY += finalViewHeight + config.spacing;
 
                 return {
                     ...view,
                     rect: {
                         x: minXInt(x, config.spacing),
                         y: minXInt(y, config.spacing),
-                        width: minXInt(finalWidth, config.minWidth),
-                        height: minXInt(calculatedViewHeight, config.minHeight),
+                        width: minXInt(finalColumnWidth, config.minWidth),
+                        height: minXInt(finalViewHeight, config.minHeight),
                     }
                 };
             });
