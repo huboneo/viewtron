@@ -15,29 +15,37 @@ import {setColumnWidthOverride} from './actions/set-column-width-override';
 import {addRow} from './actions/add-row';
 import {removeRow} from './actions/remove-row';
 import {setRowHeightOverride} from './actions/set-row-height-override';
+import {resetColumnWidths} from './actions/reset-column-widths';
+import {resetRowHeights} from './actions/reset-row-heights';
 
 import {
     ADD_VIEW_MESSAGE,
     SET_VIEW_HEIGHT_OVERRIDE_MESSAGE,
     REMOVE_VIEW_MESSAGE,
     RESET_VIEW_HEIGHTS_MESSAGE,
-    VIEW_AREA_INIT_MESSAGE,
-    VIEW_AREA_RESIZE_MESSAGE,
+    VIEWTRON_INIT_MESSAGE,
+    VIEWTRON_RESIZE_MESSAGE,
     VIEW_ADD_COLUMN_MESSAGE,
     VIEW_REMOVE_COLUMN_MESSAGE,
-    SET_COLUMN_WIDTH_OVERRIDE_MESSAGE,
+    SET_COLUMN_WIDTHS_OVERRIDE_MESSAGE,
     VIEW_ADD_ROW_MESSAGE,
-    SET_ROW_OVERRIDE_OVERRIDE_MESSAGE,
+    SET_ROW_HEIGHTS_OVERRIDE_MESSAGE,
     VIEW_REMOVE_ROW_MESSAGE,
-    DEFAULT_CONFIG
+    DEFAULT_CONFIG,
+    RESET_COLUMN_WIDTHS_MESSAGE,
+    RESET_ROW_HEIGHTS_MESSAGE
 } from '../constants';
 
 import {
     AddColumnData,
     AddRowData,
-    AddViewData,
-    ColumnResizeData, RemoveColumnData, RemoveRowData, RemoveViewData,
-    RowResizeData, ViewResetData,
+    AddViewData, ColumnResetData,
+    ColumnResizeData,
+    RemoveColumnData,
+    RemoveRowData,
+    RemoveViewData, RowResetData,
+    RowResizeData,
+    ViewResetData,
     ViewResizeData,
     ViewtronConfig
 } from '../types';
@@ -50,16 +58,36 @@ export const addMainWindowHandlers = (mainWindow: BrowserWindow, config: Partial
 };
 
 export const addViewtronAreaHandlers = () => {
-    ipcMain.on(VIEW_AREA_INIT_MESSAGE, (_, rect) => {
+    ipcMain.on(VIEWTRON_INIT_MESSAGE, (_, rect) => {
         if (!rect) return;
 
         state.dispatch(setAreaRect(rect));
     });
 
-    ipcMain.on(VIEW_AREA_RESIZE_MESSAGE, (_, rect) => {
+    ipcMain.on(VIEWTRON_RESIZE_MESSAGE, (_, rect) => {
         if (!rect) return;
 
         state.dispatch(setAreaRect(rect));
+    });
+
+    ipcMain.on(VIEW_ADD_ROW_MESSAGE, (_, {name, height}: AddRowData) => {
+        state.dispatch(addRow({id: uuid(), name, height}));
+    });
+
+    ipcMain.on(VIEW_REMOVE_ROW_MESSAGE, (_, {rowId}: RemoveRowData) => {
+        if (typeof rowId !== 'string') return;
+
+        state.dispatch(removeRow({rowId}));
+    });
+
+    ipcMain.on(SET_ROW_HEIGHTS_OVERRIDE_MESSAGE, (_, {rowId, height}: RowResizeData) => {
+        if (typeof height !== 'number' || typeof rowId !== 'string') return;
+
+        state.dispatch(setRowHeightOverride({rowId, height}));
+    });
+
+    ipcMain.on(RESET_ROW_HEIGHTS_MESSAGE, (_, data: RowResetData) => {
+        state.dispatch(resetRowHeights(data));
     });
 
     ipcMain.on(VIEW_ADD_COLUMN_MESSAGE, (_, {name, rowId, width}: AddColumnData) => {
@@ -68,32 +96,20 @@ export const addViewtronAreaHandlers = () => {
         state.dispatch(addColumn({id: uuid(), name, rowId, width}));
     });
 
-    ipcMain.on(SET_COLUMN_WIDTH_OVERRIDE_MESSAGE, (_, {columnId, width}: ColumnResizeData) => {
-        if (typeof width !== 'number' || typeof columnId !== 'string') return;
-
-        state.dispatch(setColumnWidthOverride({columnId, width}));
-    });
-
     ipcMain.on(VIEW_REMOVE_COLUMN_MESSAGE, (_, {columnId}: RemoveColumnData) => {
         if (typeof columnId !== 'string') return;
 
         state.dispatch(removeColumn({columnId}));
     });
 
-    ipcMain.on(VIEW_ADD_ROW_MESSAGE, (_, {name, height}: AddRowData) => {
-        state.dispatch(addRow({id: uuid(), name, height}));
+    ipcMain.on(SET_COLUMN_WIDTHS_OVERRIDE_MESSAGE, (_, {columnId, width}: ColumnResizeData) => {
+        if (typeof width !== 'number' || typeof columnId !== 'string') return;
+
+        state.dispatch(setColumnWidthOverride({columnId, width}));
     });
 
-    ipcMain.on(SET_ROW_OVERRIDE_OVERRIDE_MESSAGE, (_, {rowId, height}: RowResizeData) => {
-        if (typeof height !== 'number' || typeof rowId !== 'string') return;
-
-        state.dispatch(setRowHeightOverride({rowId, height}));
-    });
-
-    ipcMain.on(VIEW_REMOVE_ROW_MESSAGE, (_, {rowId}: RemoveRowData) => {
-        if (typeof rowId !== 'string') return;
-
-        state.dispatch(removeRow({rowId}));
+    ipcMain.on(RESET_COLUMN_WIDTHS_MESSAGE, (_, data: ColumnResetData) => {
+        state.dispatch(resetColumnWidths(data));
     });
 };
 
@@ -104,10 +120,10 @@ export const addViewInstanceHandlers = () => {
         state.dispatch(addView({id: uuid(), url, name, columnId}));
     });
 
-    ipcMain.on(SET_VIEW_HEIGHT_OVERRIDE_MESSAGE, (_, {id, height}: ViewResizeData) => {
-        if (!id || typeof height !== 'number') return;
+    ipcMain.on(SET_VIEW_HEIGHT_OVERRIDE_MESSAGE, (_, {viewId, height}: ViewResizeData) => {
+        if (!viewId || typeof height !== 'number') return;
 
-        state.dispatch(setViewHeightOverride({viewId: id, height}));
+        state.dispatch(setViewHeightOverride({viewId: viewId, height}));
     });
 
     ipcMain.on(RESET_VIEW_HEIGHTS_MESSAGE, (_, {viewIds}: ViewResetData) => {

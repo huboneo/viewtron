@@ -47,6 +47,14 @@ export type RemoveViewData = {
     viewId: string
 }
 
+export type RowResetData = {
+    rowIds?: string[]
+}
+
+export type ColumnResetData = {
+    columnIds?: string[]
+}
+
 export type ViewResetData = {
     viewIds?: string[]
 }
@@ -62,7 +70,7 @@ export type RowResizeData = {
 }
 
 export type ViewResizeData = {
-    id: string,
+    viewId: string,
     height: number
 }
 

@@ -5,11 +5,11 @@ import {ViewResizeData} from '../types';
 
 import {SET_VIEW_HEIGHT_OVERRIDE_MESSAGE} from '../constants';
 
-const throttledEmitter = throttle(({id, height}: ViewResizeData) => {
+const throttledEmitter = throttle((data: ViewResizeData) => {
     // @ts-ignore
-    ipcRenderer.send(SET_VIEW_HEIGHT_OVERRIDE_MESSAGE, {id, height});
+    ipcRenderer.send(SET_VIEW_HEIGHT_OVERRIDE_MESSAGE, data);
 }, 100);
 
-export default function viewResizeHandler({id, height}: ViewResizeData) {
-    throttledEmitter({id, height});
+export default function viewResizeHandler(data: ViewResizeData) {
+    throttledEmitter(data);
 }

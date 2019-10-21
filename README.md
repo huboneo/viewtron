@@ -47,38 +47,40 @@ addViewInstanceHandlers();
 See [BrowserWindow options.webPreferences.preload](https://electronjs.org/docs/api/browser-window#class-browserwindow)
 
 ```typescript
-import {ipcRendererHandlers, ViewOption} from 'viewtron';
+import {ipcRendererHandlers, ViewtronUpdateData, ViewtronConfig} from 'viewtron';
 
 const {
     addColumnHandler,
     addRowHandler,
     addViewHandler,
-    viewtronAreaResizeHandler,
+    columnResetHandler,
     columnResizeHandler,
     initHandler,
     removeColumnHandler,
     removeRowHandler,
     removeViewHandler,
+    rowResetHandler,
     rowResizeHandler,
-    viewResizeHandler,
     viewResetHandler,
-    viewsUpdatedHandler,
+    viewtronResizeHandler,
+    viewtronUpdateHandler,
 } = ipcRendererHandlers
 
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener("DOMContentLoaded", () => {
+    const config: Partial<ViewtronConfig> = {}
     const appArea = document.getElementById('app-area');
 
     // init logic
-    initHandler(appArea);
+    initHandler(appArea, config);
     
     // viewtron area resize detection
-    new ResizeSensor(appArea, () => viewtronAreaResizeHandler(appArea));
+    new ResizeSensor(appArea, () => viewtronResizeHandler(appArea));
 
-    viewsUpdatedHandler((views: ViewOption[]) => {
-        // @todo: view update logic
+    viewtronUpdateHandler((data: ViewtronUpdateData) => {
+        // @todo: viewtron update logic
     });
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
@@ -88,52 +90,49 @@ window.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
         // @todo: column add logic
-        addColumnHandler({rowIndex});
+        addColumnHandler({rowId});
     }, false);
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
         // @todo: view add logic
-        addViewHandler({url, rowIndex, columnIndex});
+        addViewHandler({url, columnId});
     }, false);
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
         // @todo: row resize logic
-        rowResizeHandler({rowIndex, height});
+        rowResizeHandler({rowId, height});
     }, false);
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
         // @todo: column resize logic
-        columnResizeHandler({rowIndex, columnIndex, width});
+        columnResizeHandler({columnId, width});
     }, false);
 
     document.getElementById('foo').addEventListener('submit', (event: any) => {
         // @todo: view resize logic
-        viewResizeHandler({id, height});
+        viewResizeHandler({viewId, height});
     }, false);
 
     document.getElementById('foo').addEventListener('click', (event: any) => {
         // @todo: row remove logic
-        removeRowHandler({rowIndex});
+        removeRowHandler({rowId});
     });
 
     document.getElementById('foo').addEventListener('click', (event: any) => {
         // @todo: column remove logic
-        removeColumnHandler({columnIndex, rowIndex});
+        removeColumnHandler({columnId});
     });
 
     document.getElementById('foo').addEventListener('click', (event: any) => {
         // @todo: view remove logic
-        removeViewHandler(viewId);
+        removeViewHandler({viewId});
     });
 
     document.getElementById('foo').addEventListener('click', () => {
-        // @todo: view reset size logic
-        viewResetHandler();
-    });
-
-    document.getElementById('foo').addEventListener('dragend', (event: any) => {
-        // @todo: view resize logic
-        viewResizeHandler({id, height});
+        // @todo: layout reset size logic
+        rowResetHandler({});
+        columnResetHandler({});
+        viewResetHandler({});
     });
 });
 ```
@@ -172,34 +171,47 @@ export type addViewInstanceHandlers = () => void
 
 ### Preload process
 Could probably also be done in the renderer process.
-- [initHandler](#inithandler)
-- [viewtronAreaResizeHandler](#viewtronarearesizehandler)
+- [viewtronInitHandler](#viewtroninithandler)
+- [viewtronResizeHandler](#viewtronresizehandler)
+- [viewtronUpdateHandler](#viewtronupdatehandler)
 - [addRowHandler](#addrowhandler)
 - [removeRowHandler](#removerowhandler)
 - [rowResizeHandler](#rowresizehandler)
+- [rowResetHandler](#rowresethandler)
 - [addColumnHandler](#addcolumnhandler)
 - [removeColumnHandler](#removecolumnhandler)
 - [columnResizeHandler](#columnresizehandler)
+- [columnResetHandler](#columnresethandler)
 - [addViewHandler](#addviewhandler)
 - [removeViewHandler](#removeviewhandler)
 - [viewResizeHandler](#viewresizehandler)
-- [viewsUpdatedHandler](#viewsupdatedhandler)
 - [viewResetHandler](#viewresethandler)
 
-#### initHandler
-Binds viewtron to a specific DOM element in which views will be shown and initializes any preloaded views.
+#### viewtronInitHandler
+Initialises a viewtron area on the specified rectangle.
 
 ```typescript
-export default function initHandler(viewtronAreaElement: HTMLElement): void
+import {Rectangle} from 'electron';
+
+export default function viewtronInitHandler(viewtronAreaRect: Rectangle): void
 ```
 
-#### viewtronAreaResizeHandler
+#### viewtronResizeHandler
 sets new dimensions of the viewtron main area.
 
 ```typescript
 import {Rectangle} from 'electron';
 
-export default function viewtronAreaResizeHandler(appAreaRect: Rectangle): void;
+export default function viewtronResizeHandler(appAreaRect: Rectangle): void;
+```
+
+#### viewtronUpdateHandler
+Calls supplied callback whenever viewtron data is updated in main process. Passes updated viewtron state.
+
+```typescript
+import {ViewtronUpdateData} from 'viewtron';
+
+export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateData) => void): void
 ```
 
 #### addRowHandler
@@ -229,6 +241,15 @@ import {RowResizeData} from 'viewtron';
 export default function rowResizeHandler(data: RowResizeData): void
 ```
 
+#### rowResetHandler
+Resets heights for all or specified rows.
+
+```typescript
+import {RowResetData} from 'viewtron';
+
+export default function rowResetHandler(data: RowResetData): void
+```
+
 #### addColumnHandler
 Adds a column to the viewtron area.
 
@@ -254,6 +275,15 @@ Sets width for a specific column.
 import {ColumnResizeData} from 'viewtron';
 
 export default function columnResizeHandler(data: ColumnResizeData): void
+```
+
+#### columnResetHandler
+Resets widths for all or specified columns.
+
+```typescript
+import {ColumnResetData} from 'viewtron';
+
+export default function columnResetHandler(data: ColumnResetData): void
 ```
 
 #### addViewHandler
@@ -283,14 +313,6 @@ import {ViewResizeData} from 'viewtron';
 export default function viewResizeHandler(data: ViewResizeData): void
 ```
 
-#### viewsUpdatedHandler
-Calls supplied callback whenever viewtron data is updated in main process. Passes updated viewtron state.
-
-```typescript
-import {ViewtronUpdateData} from 'viewtron';
-
-export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateData) => void): void
-```
 
 #### viewResetHandler
 Resets all views, or a specified view, to default dimensions.

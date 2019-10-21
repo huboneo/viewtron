@@ -4,11 +4,11 @@ import {forEach, throttle} from 'lodash';
 import {AppActionMould} from '../state';
 import {ViewtronUpdateData} from '../../types';
 
-import {VIEWS_UPDATED_MESSAGE} from '../../constants';
+import {VIEWTRON_UPDATE_MESSAGE} from '../../constants';
 import recalculateViews from '../utils';
 
 const throttledEmitter = throttle((mainWindow, data: ViewtronUpdateData) => {
-    mainWindow.webContents.send(VIEWS_UPDATED_MESSAGE, data);
+    mainWindow.webContents.send(VIEWTRON_UPDATE_MESSAGE, data);
 }, 200, {leading: true, trailing: true}); // @todo: leading false?
 
 export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
