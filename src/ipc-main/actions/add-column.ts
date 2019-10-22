@@ -1,32 +1,32 @@
 import {actionCreatorFactory} from 'conduxion';
+import produce from 'immer';
+import {some} from 'lodash';
 
 import {AppActionMould} from '../state';
+import {Column} from '../../types';
 
 import {updateViews} from './update-views';
-import { find } from 'lodash';
 
-type AddColumnPayload = { id: string, rowId: string, name?: string, width?: number };
+type AddColumnPayload = Column;
 
 export type AddColumnAction = AppActionMould<'ADD_COLUMN', AddColumnPayload>
 
 export const [addColumn] = actionCreatorFactory<AddColumnAction>({
     type: 'ADD_COLUMN',
     reducer(state, payload) {
-        const {rowId} = payload;
-        const {rows} = state;
-        const row = find(rows, ({id}) => id === rowId);
+        return produce(state, (draft) => {
+            const {rowId} = payload;
+            const {rows} = draft;
+            const rowExists = some(rows, ({id}) => id === rowId);
 
-        if (!row) return state;
+            if (!rowExists) return;
 
-        return {
-            ...state,
-            columns: [
-                ...state.columns,
-                payload
-            ]
-        };
+            draft.columns.push(payload);
+        });
     },
-    consequence({dispatch}) {
-        dispatch(updateViews());
+    consequence({dispatch, action}) {
+        const {windowId} = action.payload;
+
+        dispatch(updateViews({windowId}));
     }
 });

@@ -1,30 +1,33 @@
 import {actionCreatorFactory} from 'conduxion';
-import { find } from 'lodash';
+import produce from 'immer';
+import {findIndex } from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 import {getOverrideValue} from '../utils';
 
-type SetViewHeightOverridePayload = { viewId: string, height: number };
+type SetViewHeightOverridePayload = { windowId: string, viewId: string, height: number };
 
 export type SetViewHeightOverrideAction = AppActionMould<'SET_VIEW_HEIGHT_OVERRIDE', SetViewHeightOverridePayload>
 
 export const [setViewHeightOverride] = actionCreatorFactory<SetViewHeightOverrideAction>({
     type: 'SET_VIEW_HEIGHT_OVERRIDE',
     reducer(state, payload) {
-        const {config, currentAppAreaRect, views} = state;
-        const {viewId, height} = payload;
-        const toSet = find(views, ({id}) => id === viewId);
+        return produce(state, (draft) => {
+            const {activeWindows, views} = draft;
+            const {windowId, viewId, height} = payload;
+            const viewIndex = findIndex(views, ({id}) => id === viewId);
+            const {config, rect} = activeWindows[windowId] || {};
 
-        if (!currentAppAreaRect || !toSet) return state;
+            if (!rect || viewIndex < 0) return;
 
-        // @todo: immer
-        toSet.height = getOverrideValue(config, currentAppAreaRect.height, height);
-
-        return state;
+            draft.views[viewIndex].height = getOverrideValue(config, rect.height, height);
+        });
     },
-    consequence({dispatch}) {
-        dispatch(updateViews());
+    consequence({dispatch, action}) {
+        const {windowId} = action.payload;
+
+        dispatch(updateViews({windowId}));
     }
 });

@@ -21,5 +21,6 @@ export const DEFAULT_CONFIG: ViewtronConfig = {
     spacing: 10,
     minWidth: 50,
     minHeight: 50,
-    responsive: true
+    responsive: true,
+    destroyOnClose: true,
 };

@@ -1,19 +1,51 @@
-import {Rectangle} from 'electron';
-import {Column, Row} from './ipc-main/state';
+import {BrowserView, BrowserWindow, Rectangle} from 'electron';
+import {Store} from 'redux';
+import {AppAction, AppState} from './ipc-main/state';
+
+export type ViewtronInstance = {
+    viewtronWindow: ViewtronWindow,
+    state: Store<AppState, AppAction>,
+    removeViewtron: () => void,
+}
+
+export type ViewtronWindow = {
+    id: string,
+    instance: BrowserWindow,
+    rect?: Rectangle,
+    config: ViewtronConfig
+}
+
+export type Column = {
+    id: string,
+    windowId: string;
+    rowId: string,
+    name?: string,
+    width?: number
+};
+
+export type Row = {
+    id: string,
+    windowId: string;
+    name?: string,
+    height?: number
+};
 
 export type ViewtronConfig = {
     spacing: number,
     minWidth: number,
     minHeight: number,
     responsive: boolean,
+    destroyOnClose: boolean,
 }
 
 export type ViewtronView = {
     id: string;
     url: string;
     name?: string;
+    windowId: string;
     columnId: string;
     rect?: Rectangle;
+    instance: BrowserView;
     height?: number;
     options?: any
 }

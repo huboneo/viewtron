@@ -1,33 +1,33 @@
 import {actionCreatorFactory} from 'conduxion';
+import produce from 'immer';
 import {filter, includes, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {removeViews} from './remove-views';
 
-type RemoveColumnPayload = { columnIds: string[] };
+type RemoveColumnPayload = { windowId: string, columnIds: string[] };
 
 export type RemoveColumnAction = AppActionMould<'REMOVE_COLUMN', RemoveColumnPayload>
 
 export const [removeColumns] = actionCreatorFactory<RemoveColumnAction>({
     type: 'REMOVE_COLUMN',
     reducer(state, payload) {
-        const {columns} = state;
-        const {columnIds} = payload;
+        return produce(state, (draft) => {
+            const {columns} = draft;
+            const {columnIds} = payload;
 
-        return {
-            ...state,
-            columns: filter(columns, ({id}) => !includes(columnIds, id))
-        };
+            draft.columns = filter(columns, ({id}) => !includes(columnIds, id));
+        });
     },
     consequence({dispatch, getState, action}) {
-        const {payload} = action;
+        const {windowId, columnIds} = action.payload;
         const {views} = getState();
         const columnViews = filter(
             views,
-            ({columnId}) => includes(payload.columnIds, columnId)
+            ({columnId}) => includes(columnIds, columnId)
         );
 
-        dispatch(removeViews({viewIds: map(columnViews, 'id')}));
+        dispatch(removeViews({windowId, viewIds: map(columnViews, 'id')}));
     }
 });

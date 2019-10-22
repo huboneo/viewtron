@@ -1,27 +1,29 @@
 import {actionCreatorFactory} from 'conduxion';
+import produce from 'immer';
 
+import {Row} from '../../types';
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type AddRowPayload = { id: string, name?: string, height?: number };
+type AddRowPayload = Row;
 
 export type AddRowAction = AppActionMould<'ADD_ROW', AddRowPayload>
 
 export const [addRow] = actionCreatorFactory<AddRowAction>({
     type: 'ADD_ROW',
     reducer(state, payload) {
-        const {rows} = state;
+        return produce(state, (draft) => {
+            const {windowId} = payload;
 
-        return {
-            ...state,
-            rows: [
-                ...rows,
-                payload
-            ]
-        }
+            if (!draft.activeWindows[windowId]) return;
+
+            draft.rows.push(payload);
+        });
     },
-    consequence({dispatch}) {
-        dispatch(updateViews());
+    consequence({dispatch, action}) {
+        const {windowId} = action.payload;
+
+        dispatch(updateViews({windowId}));
     }
 });

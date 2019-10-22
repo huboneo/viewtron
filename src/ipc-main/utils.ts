@@ -1,8 +1,7 @@
 import {Rectangle} from 'electron';
 import {filter, map, sumBy, flatMap} from 'lodash';
 
-import {ViewtronView, ViewtronConfig} from '../types';
-import {Row, Column} from './state';
+import {Column, ViewtronConfig, ViewtronView, Row} from '../types';
 
 export default function calculateViewRects(config: ViewtronConfig, mainRect: Rectangle, rows: Row[], columns: Column[], views: ViewtronView[]) {
     const defaultRows = filter(rows, ({height}) => !height);
@@ -88,7 +87,6 @@ export default function calculateViewRects(config: ViewtronConfig, mainRect: Rec
 
         return rowViews;
     });
-
 }
 
 function getPixelValue(config: ViewtronConfig, base: number, target: number) {

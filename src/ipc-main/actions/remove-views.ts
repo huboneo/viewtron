@@ -1,35 +1,36 @@
 import {actionCreatorFactory} from 'conduxion';
-import {omit, filter, includes, values, pick, forEach} from 'lodash';
+import produce from 'immer';
+import {filter, includes, forEach} from 'lodash';
 
 import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type RemoveViewPayload = {viewIds: string[]}
+type RemoveViewPayload = {windowId: string, viewIds: string[]}
 
 export type RemoveViewAction = AppActionMould<'REMOVE_VIEW', RemoveViewPayload>
 
 export const [removeViews] = actionCreatorFactory<RemoveViewAction>({
     type: 'REMOVE_VIEW',
     reducer(state, payload) {
-        const {viewIds} = payload;
-        const {mainWindow, activeViews, views} = state;
-        const viewToRemove = values(pick(activeViews, viewIds));
+        return produce(state, (draft) => {
+            const {activeWindows, views} = draft;
+            const {windowId, viewIds} = payload;
+            const viewsToRemove = filter(views, ({id}) => includes(viewIds, id));
 
-        forEach(viewToRemove, (view) => {
-            if (mainWindow && view) {
-                mainWindow.removeBrowserView(view);
-                view.destroy();
-            }
+            forEach(viewsToRemove, (view) => {
+                if (activeWindows[windowId] && view.instance) {
+                    activeWindows[windowId].instance.removeBrowserView(view.instance);
+                }
+                view.instance.destroy();
+            });
+
+            draft.views = filter(views, ({id}) => !includes(viewIds, id));
         });
-
-        return {
-            ...state,
-            views: filter(views, ({id}) => !includes(viewIds, id)),
-            activeViews: omit(activeViews, viewIds)
-        }
     },
-    consequence({dispatch}) {
-        dispatch(updateViews())
+    consequence({dispatch, action}) {
+        const {windowId} = action.payload;
+
+        dispatch(updateViews({windowId}));
     }
 });

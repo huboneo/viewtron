@@ -1,41 +1,42 @@
 import {BrowserView} from 'electron';
 import {actionCreatorFactory} from 'conduxion';
+import produce from 'immer';
+import {some} from 'lodash';
 
 import {AppActionMould} from '../state';
-
-import {updateViews} from './update-views';
 import {ViewtronView} from '../../types';
 
-type AddViewPayload = ViewtronView
+import {updateViews} from './update-views';
+
+type AddViewPayload = Omit<ViewtronView, 'instance'>
 
 export type AddViewAction = AppActionMould<'ADD_VIEW', AddViewPayload>
 
 export const [addView] = actionCreatorFactory<AddViewAction>({
     type: 'ADD_VIEW',
     reducer(state, payload) {
-        const {mainWindow, views} = state;
-        const {id, url} = payload;
+        return produce(state, (draft) => {
+            const {columns} = draft;
+            const {windowId, columnId, url} = payload;
+            const columnExits = some(columns, ({id}) => id === columnId);
 
-        if (!mainWindow) return state;
+            if (!columnExits) return;
 
-        const view = new BrowserView();
+            const {instance} = draft.activeWindows[windowId];
+            const viewInstance = new BrowserView();
 
-        mainWindow.addBrowserView(view);
-        view.webContents.loadURL(url);
+            instance.addBrowserView(viewInstance);
+            viewInstance.webContents.loadURL(url);
 
-        return {
-            ...state,
-            views: [
-                ...views,
-                 payload
-            ],
-            activeViews: {
-                ...state.activeViews,
-                [id]: view
-            }
-        }
+            draft.views.push({
+                ...payload,
+                instance: viewInstance
+            });
+        });
     },
-    consequence({dispatch}) {
-        dispatch(updateViews());
+    consequence({dispatch, action}) {
+        const {windowId} = action.payload;
+
+        dispatch(updateViews({windowId}));
     }
 });

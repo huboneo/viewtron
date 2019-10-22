@@ -1,5 +1,5 @@
 # Viewtron
-Allows for advanced [electron browser view](https://electronjs.org/docs/api/browser-view) layouts a parent application.
+Allows for advanced [electron BrowserView](https://electronjs.org/docs/api/browser-view) layouts in an [electron BrowserWindow](https://electronjs.org/docs/api/browser-window).
 See [viewtron-sample-app](https://github.com/huboneo/viewtron-sample-app) for a small usage example.
 
 ## Table of Contents
@@ -21,26 +21,25 @@ Please note that [`electron`](https://electronjs.org) is a peer-dependency.
 ### Main Process:
 ```typescript
 import {BrowserWindow} from 'electron'
-import {ipcMainHandlers} from 'viewtron';
+import {ipcMainHandlers, ViewtronConfig} from 'viewtron';
 
 const {
-    addMainWindowHandlers,
-    addViewInstanceHandlers,
-    addViewtronAreaHandlers,
+    addViewtron
 } = ipcMainHandlers
 /* OR
 import {
-    addMainWindowHandlers,
-    addViewInstanceHandlers,
-    addViewtronAreaHandlers,
+    addViewtron
 } from 'viewtron/dist/ipc-main';
 */
 
+const config: Partial<ViewtronConfig> = {}
 const mainWindow = new BrowserWindow()
 
-addMainWindowHandlers(mainWindow);
-addViewtronAreaHandlers();
-addViewInstanceHandlers();
+const {
+  viewtronWindow,
+  state,
+  removeViewtron,
+} = addViewtron(mainWindow, config);
 ```
 
 ### Preload process:
@@ -143,32 +142,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
 ## API
 ### Main Process
-- [addMainWindowHandlers](#addmainwindowhandlers)
-- [addViewtronAreaHandlers](#addviewtronareahandlers)
-- [addViewInstanceHandlers](#addviewinstancehandlers)
+- [addViewtron](#addviewtron)
 
-#### addMainWindowHandlers
+#### addViewtron
 Applies handlers to the main electron window instance. Should be called on each new main window instance
 
 ```typescript
 import {BrowserWindow} from 'electron';
-import {ViewtronConfig} from 'viewtron';
+import {ViewtronInstance, ViewtronConfig} from 'viewtron';
 
-export type addMainWindowHandlers = (mainWindow: BrowserWindow, config: Partial<ViewtronConfig> = {}) => void
-```
-
-#### addViewtronAreaHandlers
-Applies handlers for the main Viewtron area in which views are displayed. Should only be applied once per main process,
-
-```typescript
-export type addViewtronAreaHandlers = () => void
-```
-
-#### addViewInstanceHandlers
-Applies handlers for the each Viewtron BrowserView instance. Should only be applied once per main process.
-
-```typescript
-export type addViewInstanceHandlers = () => void
+export type addViewtron = (mainWindow: BrowserWindow, config: Partial<ViewtronConfig> = {}) => ViewtronInstance
 ```
 
 ### Preload process

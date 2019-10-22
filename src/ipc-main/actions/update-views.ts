@@ -1,5 +1,6 @@
 import {actionCreatorFactory} from 'conduxion';
-import {forEach, throttle} from 'lodash';
+import produce from 'immer';
+import {forEach, throttle, filter} from 'lodash';
 
 import {AppActionMould} from '../state';
 import {ViewtronUpdateData} from '../../types';
@@ -11,31 +12,50 @@ const throttledEmitter = throttle((mainWindow, data: ViewtronUpdateData) => {
     mainWindow.webContents.send(VIEWTRON_UPDATE_MESSAGE, data);
 }, 200, {trailing: true}); // @todo: leading false?
 
-export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', undefined>
+export type UpdateViewsPayload = { windowId: string };
+
+export type UpdateViewsAction = AppActionMould<'UPDATE_VIEWS', UpdateViewsPayload>
 
 export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
     type: 'UPDATE_VIEWS',
-    reducer(state) {
-        const {config, currentAppAreaRect, rows, columns, views} = state;
+    reducer(state, payload) {
+        return produce(state, (draft) => {
+            const {windowId} = payload;
+            const {activeWindows, rows, columns, views} = draft;
+            const {config, rect} = activeWindows[windowId] || {};
 
-        if (!currentAppAreaRect) return state;
+            if (!rect) return state;
 
-        return {
-            ...state,
-            views: recalculateViews(config, currentAppAreaRect, rows, columns, views)
-        }
+            draft.views = [
+                ...filter(views, (view) => view.windowId !== windowId),
+                ...recalculateViews(
+                    config,
+                    rect,
+                    filter(rows, (row) => row.windowId === windowId),
+                    filter(columns, (column) => column.windowId === windowId),
+                    filter(views, (view) => view.windowId === windowId)
+                )
+            ]
+        });
     },
-    consequence({getState}) {
-        const {activeViews, mainWindow, views, rows, columns} = getState();
+    consequence({getState, action}) {
+        const {windowId} = action.payload;
+        const {activeWindows, views, rows, columns} = getState();
+        const viewtronWindow = activeWindows[windowId];
+        const windowRows = filter(rows, (row) => row.windowId === windowId);
+        const windowColumns = filter(columns, (column) => column.windowId === windowId);
+        const windowViews = filter(views, (view) => view.windowId === windowId);
 
-        forEach(views, ({id, rect}) => {
-            const view = activeViews[id];
+        forEach(windowViews, ({instance, rect}) => {
+            if (!instance || !rect) return;
 
-            if (!view || !rect) return;
-
-            view.setBounds(rect);
+            instance.setBounds(rect);
         });
 
-        throttledEmitter(mainWindow, {rows, columns, views});
+        throttledEmitter(viewtronWindow.instance, {
+            rows: windowRows,
+            columns: windowColumns,
+            views: windowViews
+        });
     }
 });
