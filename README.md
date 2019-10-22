@@ -47,89 +47,91 @@ addViewInstanceHandlers();
 See [BrowserWindow options.webPreferences.preload](https://electronjs.org/docs/api/browser-window#class-browserwindow)
 
 ```typescript
-import {ipcRendererHandlers, ViewtronUpdateData, ViewtronConfig} from 'viewtron';
-
-const {
+import {ResizeSensor} from "css-element-queries";
+import {ViewtronUpdateData} from "viewtron";
+import {
     addColumnHandler,
     addRowHandler,
     addViewHandler,
     columnResetHandler,
     columnResizeHandler,
-    initHandler,
     removeColumnHandler,
     removeRowHandler,
     removeViewHandler,
     rowResetHandler,
     rowResizeHandler,
     viewResetHandler,
+    viewResizeHandler,
+    viewtronInitHandler,
     viewtronResizeHandler,
     viewtronUpdateHandler,
-} = ipcRendererHandlers
-
+} from "viewtron/dist/ipc-renderer";
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 window.addEventListener("DOMContentLoaded", () => {
-    const config: Partial<ViewtronConfig> = {}
-    const appArea = document.getElementById('app-area');
+    const appArea = document.getElementById("viewtron-area");
 
-    // init logic
-    initHandler(appArea, config);
-    
-    // viewtron area resize detection
-    new ResizeSensor(appArea, () => viewtronResizeHandler(appArea));
+    // @todo: init logic
+    viewtronInitHandler(appArea.getBoundingClientRect().toJSON());
 
-    viewtronUpdateHandler((data: ViewtronUpdateData) => {
-        // @todo: viewtron update logic
+    // @ts-ignore
+    new ResizeSensor(appArea, () => {
+        // @todo: resize logic
+        viewtronResizeHandler(appArea.getBoundingClientRect().toJSON())
     });
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
-        // @todo: row add logic
+    viewtronUpdateHandler((update: ViewtronUpdateData) => {
+        // @todo: update logic
+    });
+
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove row logic
+        removeRowHandler({rowId});
+    });
+
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove column logic
+        removeColumnHandler({columnId})
+    });
+
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove view logic
+        removeViewHandler({viewId})
+    });
+
+    document.getElementById("add-row-form").addEventListener("submit", (event: any) => {
+        // @todo: add row logic
         addRowHandler({});
     }, false);
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
-        // @todo: column add logic
+    document.getElementById("add-column-form").addEventListener("submit", (event: any) => {
+        // @todo: add column logic
         addColumnHandler({rowId});
     }, false);
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
-        // @todo: view add logic
+    document.getElementById("add-view-form").addEventListener("submit", (event: any) => {
+        // @todo: add view logic
         addViewHandler({url, columnId});
     }, false);
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
+    document.getElementById("row-height-form").addEventListener("submit", (event: any) => {
         // @todo: row resize logic
         rowResizeHandler({rowId, height});
     }, false);
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
+    document.getElementById("column-width-form").addEventListener("submit", (event: any) => {
         // @todo: column resize logic
         columnResizeHandler({columnId, width});
     }, false);
 
-    document.getElementById('foo').addEventListener('submit', (event: any) => {
+    document.getElementById("view-height-form").addEventListener("submit", (event: any) => {
         // @todo: view resize logic
         viewResizeHandler({viewId, height});
     }, false);
 
-    document.getElementById('foo').addEventListener('click', (event: any) => {
-        // @todo: row remove logic
-        removeRowHandler({rowId});
-    });
-
-    document.getElementById('foo').addEventListener('click', (event: any) => {
-        // @todo: column remove logic
-        removeColumnHandler({columnId});
-    });
-
-    document.getElementById('foo').addEventListener('click', (event: any) => {
-        // @todo: view remove logic
-        removeViewHandler({viewId});
-    });
-
-    document.getElementById('foo').addEventListener('click', () => {
-        // @todo: layout reset size logic
+    document.getElementById("reset-layout").addEventListener("click", () => {
+        // layout reset logic
         rowResetHandler({});
         columnResetHandler({});
         viewResetHandler({});
@@ -202,7 +204,7 @@ sets new dimensions of the viewtron main area.
 ```typescript
 import {Rectangle} from 'electron';
 
-export default function viewtronResizeHandler(appAreaRect: Rectangle): void;
+export default function viewtronResizeHandler(viewtronAreaRect: Rectangle): void;
 ```
 
 #### viewtronUpdateHandler
