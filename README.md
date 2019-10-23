@@ -179,16 +179,19 @@ Could probably also be done in the renderer process.
 - [viewtronUpdateHandler](#viewtronupdatehandler)
 - [addRowHandler](#addrowhandler)
 - [removeRowHandler](#removerowhandler)
+- [reorderRowHandler](#reorderrowhandler)
 - [rowResizeHandler](#rowresizehandler)
 - [rowResetHandler](#rowresethandler)
 - [rowVisibilityHandler](#rowvisibilityhandler)
 - [addColumnHandler](#addcolumnhandler)
 - [removeColumnHandler](#removecolumnhandler)
+- [reorderColumnHandler](#reordercolumnhandler)
 - [columnResizeHandler](#columnresizehandler)
 - [columnResetHandler](#columnresethandler)
 - [columnVisibilityHandler](#columnvisibilityhandler)
 - [addViewHandler](#addviewhandler)
 - [removeViewHandler](#removeviewhandler)
+- [reorderViewHandler](#reorderviewhandler)
 - [viewResizeHandler](#viewresizehandler)
 - [viewResetHandler](#viewresethandler)
 - [viewVisibilityHandler](#viewvisibilityhandler)
@@ -238,6 +241,15 @@ import {RemoveRowData} from 'viewtron';
 export default function removeRowHandler(data: RemoveRowData): void
 ```
 
+#### reorderRowHandler
+Moves a row in the viewtron area.
+
+```typescript
+import {ReorderRowData} from 'viewtron';
+
+export default function reorderRowHandler(data: ReorderRowData): void
+```
+
 #### rowResizeHandler
 Sets height for a specific row.
 
@@ -283,6 +295,15 @@ import {RemoveColumnData} from 'viewtron'
 export default function removeColumnHandler(data: RemoveColumnData): void
 ```
 
+#### reorderColumnHandler
+Moves a column inside a row.
+
+```typescript
+import {ReorderColumnData} from 'viewtron'
+
+export default function reorderColumnHandler(data: ReorderColumnData): void
+```
+
 #### columnResizeHandler
 Sets width for a specific column.
 
@@ -326,6 +347,15 @@ Removes a view instance.
 import {RemoveViewData} from 'viewtron';
 
 export default function removeViewHandler(data: RemoveViewData): void
+```
+
+#### reorderViewHandler
+Movers a view instance inside a column.
+
+```typescript
+import {ReorderViewData} from 'viewtron';
+
+export default function reorderViewHandler(data: ReorderViewData): void
 ```
 
 #### viewResizeHandler
