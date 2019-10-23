@@ -6,12 +6,12 @@ import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type RemoveViewPayload = { windowId: string, viewIds: string[] }
+type RemoveViewsPayload = { windowId: string, viewIds: string[] }
 
-export type RemoveViewAction = AppActionMould<'REMOVE_VIEW', RemoveViewPayload>
+export type RemoveViewsAction = AppActionMould<'REMOVE_VIEWS', RemoveViewsPayload>
 
-export const [removeViews] = actionCreatorFactory<RemoveViewAction>({
-    type: 'REMOVE_VIEW',
+export const [removeViews] = actionCreatorFactory<RemoveViewsAction>({
+    type: 'REMOVE_VIEWS',
     reducer(state, payload) {
         return produce(state, (draft) => {
             const {activeWindows, views} = draft;

@@ -1,5 +1,5 @@
 import {Rectangle} from 'electron';
-import {filter, map, sumBy, flatMap} from 'lodash';
+import {filter, map, sumBy, flatMap, find, slice} from 'lodash';
 
 import {Column, ViewtronConfig, ViewtronView, Row} from '../types';
 
@@ -108,3 +108,19 @@ export function getOverrideValue(config: ViewtronConfig, base: number, target: n
 function minXInt(num: number, min: number) {
     return Math.floor(Math.max(num, min));
 }
+
+export function reorderItems<T = any>(items: T[], oldIndex: number, newIndex: number) {
+    if (oldIndex < 0 || oldIndex === newIndex || newIndex >= items.length) return items;
+
+    const moved = find(items, (_, index) => index === oldIndex);
+    const remaining = filter(items, (_, index) => index !== oldIndex);
+
+    if (!moved) return items;
+
+    return [
+        ...slice(remaining, 0, newIndex),
+        moved,
+        ...slice(remaining, newIndex)
+    ];
+}
+

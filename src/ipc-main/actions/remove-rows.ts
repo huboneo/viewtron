@@ -6,12 +6,12 @@ import {AppActionMould} from '../state';
 
 import {removeColumns} from './remove-columns';
 
-type RemoveRowPayload = { windowId: string, rowIds: string[] };
+type RemoveRowsPayload = { windowId: string, rowIds: string[] };
 
-export type RemoveRowAction = AppActionMould<'REMOVE_ROW', RemoveRowPayload>
+export type RemoveRowsAction = AppActionMould<'REMOVE_ROWS', RemoveRowsPayload>
 
-export const [removeRows] = actionCreatorFactory<RemoveRowAction>({
-    type: 'REMOVE_ROW',
+export const [removeRows] = actionCreatorFactory<RemoveRowsAction>({
+    type: 'REMOVE_ROWS',
     reducer(state, payload) {
         return produce(state, (draft) => {
             const {rows} = draft;

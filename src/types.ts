@@ -63,6 +63,11 @@ export type RemoveRowData = {
     rowId: string
 }
 
+export type ReorderRowData = {
+    rowId: string
+    newIndex: number
+}
+
 export type AddColumnData = {
     rowId: string,
     name?: string,
@@ -73,6 +78,11 @@ export type RemoveColumnData = {
     columnId: string
 }
 
+export type ReorderColumnData = {
+    columnId: string
+    newIndex: number
+}
+
 export type AddViewData = {
     url: string,
     columnId: string
@@ -81,6 +91,11 @@ export type AddViewData = {
 
 export type RemoveViewData = {
     viewId: string
+}
+
+export type ReorderViewData = {
+    viewId: string
+    newIndex: number
 }
 
 export type RowResetData = {
