@@ -1,7 +1,8 @@
 import {ipcRenderer} from 'electron';
 
-import {RESET_ROW_HEIGHTS_MESSAGE} from '../constants';
 import {RowResetData} from '../types';
+
+import {RESET_ROW_HEIGHTS_MESSAGE} from '../constants';
 
 export default function rowResetHandler(data: RowResetData) {
     // @ts-ignore

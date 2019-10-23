@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain,} from 'electron';
+import {BrowserWindow, ipcMain} from 'electron';
 import uuid from 'uuid/v4';
 import {assign} from 'lodash';
 
@@ -57,9 +57,6 @@ import {
 import state from './state';
 
 export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronConfig> = {}): ViewtronInstance {
-    /**
-     * Main window handlers
-     */
     const windowId = uuid();
     const activeWindow: ViewtronWindow = {
         id: windowId,
@@ -69,8 +66,11 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
 
     state.dispatch(addWindow(activeWindow));
 
+    /**
+     * Main window handlers
+     */
     mainWindow.on('close', () => {
-        if (!config.destroyOnClose) return;
+        if (!activeWindow.config.destroyOnClose) return;
 
         state.dispatch(removeWindow({windowId}))
     });

@@ -6,7 +6,7 @@ import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type SetAreaRectPayload = {windowId: string, rect: Rectangle}
+type SetAreaRectPayload = { windowId: string, rect: Rectangle }
 
 export type SetAreaRectAction = AppActionMould<'SET_AREA_RECT', SetAreaRectPayload>
 

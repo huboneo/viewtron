@@ -6,7 +6,7 @@ import {AppActionMould} from '../state';
 
 import {updateViews} from './update-views';
 
-type RemoveViewPayload = {windowId: string, viewIds: string[]}
+type RemoveViewPayload = { windowId: string, viewIds: string[] }
 
 export type RemoveViewAction = AppActionMould<'REMOVE_VIEW', RemoveViewPayload>
 

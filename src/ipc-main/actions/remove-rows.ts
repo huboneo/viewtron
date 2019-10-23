@@ -1,6 +1,6 @@
 import {actionCreatorFactory} from 'conduxion';
 import produce from 'immer';
-import { filter, includes, map } from 'lodash';
+import {filter, includes, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 

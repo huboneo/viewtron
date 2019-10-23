@@ -1,5 +1,6 @@
-import {BrowserView, BrowserWindow, Rectangle} from 'electron';
 import {Store} from 'redux';
+import {BrowserView, BrowserWindow, Rectangle} from 'electron';
+
 import {AppAction, AppState} from './ipc-main/state';
 
 export type ViewtronInstance = {

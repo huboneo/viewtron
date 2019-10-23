@@ -6,7 +6,7 @@ import {AppActionMould} from '../state';
 
 import {removeRows} from './remove-rows';
 
-type RemoveWindowPayload = {windowId: string}
+type RemoveWindowPayload = { windowId: string }
 
 export type RemoveWindowAction = AppActionMould<'REMOVE_WINDOW', RemoveWindowPayload>
 
