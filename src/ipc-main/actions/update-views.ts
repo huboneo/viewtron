@@ -27,13 +27,13 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
             if (!rect) return state;
 
             draft.views = [
-                ...filter(views, (view) => view.windowId !== windowId),
+                ...filter(views, (view) => view.hidden || view.windowId !== windowId),
                 ...recalculateViews(
                     config,
                     rect,
-                    filter(rows, (row) => row.windowId === windowId),
-                    filter(columns, (column) => column.windowId === windowId),
-                    filter(views, (view) => view.windowId === windowId)
+                    filter(rows, (row) => !row.hidden && row.windowId === windowId),
+                    filter(columns, (column) => !column.hidden && column.windowId === windowId),
+                    filter(views, (view) => !view.hidden && view.windowId === windowId)
                 )
             ]
         });
@@ -46,8 +46,8 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
         const windowColumns = filter(columns, (column) => column.windowId === windowId);
         const windowViews = filter(views, (view) => view.windowId === windowId);
 
-        forEach(windowViews, ({instance, rect}) => {
-            if (!instance || !rect) return;
+        forEach(windowViews, ({instance, hidden, rect}) => {
+            if (hidden || !instance || !rect) return;
 
             instance.setBounds(rect);
         });

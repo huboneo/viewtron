@@ -54,13 +54,16 @@ import {
     addViewHandler,
     columnResetHandler,
     columnResizeHandler,
+    columnVisibilityHandler,
     removeColumnHandler,
     removeRowHandler,
     removeViewHandler,
     rowResetHandler,
     rowResizeHandler,
+    rowVisibilityHandler,
     viewResetHandler,
     viewResizeHandler,
+    viewVisibilityHandler,
     viewtronInitHandler,
     viewtronResizeHandler,
     viewtronUpdateHandler,
@@ -84,21 +87,6 @@ window.addEventListener("DOMContentLoaded", () => {
         // @todo: update logic
     });
 
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove row logic
-        removeRowHandler({rowId});
-    });
-
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove column logic
-        removeColumnHandler({columnId})
-    });
-
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove view logic
-        removeViewHandler({viewId})
-    });
-
     document.getElementById("add-row-form").addEventListener("submit", (event: any) => {
         // @todo: add row logic
         addRowHandler({});
@@ -114,6 +102,21 @@ window.addEventListener("DOMContentLoaded", () => {
         addViewHandler({url, columnId});
     }, false);
 
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove row logic
+        removeRowHandler({rowId});
+    });
+
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove column logic
+        removeColumnHandler({columnId})
+    });
+
+    document.getElementById("foo").addEventListener("click", (event: any) => {
+        // @todo: remove view logic
+        removeViewHandler({viewId})
+    });
+
     document.getElementById("row-height-form").addEventListener("submit", (event: any) => {
         // @todo: row resize logic
         rowResizeHandler({rowId, height});
@@ -127,6 +130,21 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("view-height-form").addEventListener("submit", (event: any) => {
         // @todo: view resize logic
         viewResizeHandler({viewId, height});
+    }, false);
+
+    document.getElementById("row-visibility-form").addEventListener("submit", (event: any) => {
+        // @todo: row visibility logic
+        rowVisibilityHandler({rowId, visible});
+    }, false);
+
+    document.getElementById("column-visibility-form").addEventListener("submit", (event: any) => {
+        // @todo: column visibility logic
+        columnVisibilityHandler({columnId, visible});
+    }, false);
+
+    document.getElementById("view-visibility-form").addEventListener("submit", (event: any) => {
+        // @todo: view visibility logic
+        viewVisibilityHandler({viewId, visible});
     }, false);
 
     document.getElementById("reset-layout").addEventListener("click", () => {
@@ -163,14 +181,17 @@ Could probably also be done in the renderer process.
 - [removeRowHandler](#removerowhandler)
 - [rowResizeHandler](#rowresizehandler)
 - [rowResetHandler](#rowresethandler)
+- [rowVisibilityHandler](#rowvisibilityhandler)
 - [addColumnHandler](#addcolumnhandler)
 - [removeColumnHandler](#removecolumnhandler)
 - [columnResizeHandler](#columnresizehandler)
 - [columnResetHandler](#columnresethandler)
+- [columnVisibilityHandler](#columnvisibilityhandler)
 - [addViewHandler](#addviewhandler)
 - [removeViewHandler](#removeviewhandler)
 - [viewResizeHandler](#viewresizehandler)
 - [viewResetHandler](#viewresethandler)
+- [viewVisibilityHandler](#viewvisibilityhandler)
 
 #### viewtronInitHandler
 Initialises a viewtron area on the specified rectangle.
@@ -235,6 +256,15 @@ import {RowResetData} from 'viewtron';
 export default function rowResetHandler(data: RowResetData): void
 ```
 
+#### rowVisibilityHandler
+Sets visibility of a row
+
+```typescript
+import {RowVisibilityData} from 'viewtron';
+
+export default function rowVisibilityHandler(data: RowVisibilityData): void
+```
+
 #### addColumnHandler
 Adds a column to the viewtron area.
 
@@ -271,6 +301,15 @@ import {ColumnResetData} from 'viewtron';
 export default function columnResetHandler(data: ColumnResetData): void
 ```
 
+#### columnVisibilityHandler
+Sets visibility of a column
+
+```typescript
+import {ColumnVisibilityData} from 'viewtron';
+
+export default function columnVisibilityHandler(data: ColumnVisibilityData): void
+```
+
 #### addViewHandler
 Adds a view instance.
 
@@ -298,7 +337,6 @@ import {ViewResizeData} from 'viewtron';
 export default function viewResizeHandler(data: ViewResizeData): void
 ```
 
-
 #### viewResetHandler
 Resets all views, or a specified view, to default dimensions.
 
@@ -306,5 +344,14 @@ Resets all views, or a specified view, to default dimensions.
 import {ViewResetData} from 'viewtron';
 
 export default function viewResetHandler(data: ViewResetData): void
+```
+
+#### viewVisibilityHandler
+Sets visibility of a view.
+
+```typescript
+import {ViewVisibilityData} from 'viewtron';
+
+export default function viewVisibilityHandler(data: ViewVisibilityData): void
 ```
 

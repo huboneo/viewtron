@@ -21,14 +21,16 @@ export type Column = {
     windowId: string;
     rowId: string,
     name?: string,
-    width?: number
+    width?: number,
+    hidden?: boolean
 };
 
 export type Row = {
     id: string,
     windowId: string;
     name?: string,
-    height?: number
+    height?: number,
+    hidden?: boolean
 };
 
 export type ViewtronConfig = {
@@ -48,7 +50,17 @@ export type ViewtronView = {
     rect?: Rectangle;
     instance: BrowserView;
     height?: number;
-    options?: any
+    options?: any,
+    hidden?: boolean
+}
+
+export type AddRowData = {
+    name?: string,
+    height?: number
+}
+
+export type RemoveRowData = {
+    rowId: string
 }
 
 export type AddColumnData = {
@@ -59,15 +71,6 @@ export type AddColumnData = {
 
 export type RemoveColumnData = {
     columnId: string
-}
-
-export type AddRowData = {
-    name?: string,
-    height?: number
-}
-
-export type RemoveRowData = {
-    rowId: string
 }
 
 export type AddViewData = {
@@ -92,19 +95,34 @@ export type ViewResetData = {
     viewIds?: string[]
 }
 
-export type ColumnResizeData = {
-    columnId: string
-    width: number
-}
-
 export type RowResizeData = {
     rowId: string,
     height: number
 }
 
+export type ColumnResizeData = {
+    columnId: string
+    width: number
+}
+
 export type ViewResizeData = {
     viewId: string,
     height: number
+}
+
+export type RowVisibilityData = {
+    rowId: string,
+    visible: boolean
+}
+
+export type ColumnVisibilityData = {
+    columnId: string
+    visible: boolean
+}
+
+export type ViewVisibilityData = {
+    viewId: string,
+    visible: boolean
 }
 
 export type ViewtronUpdateData = {

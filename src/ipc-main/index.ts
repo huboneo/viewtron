@@ -17,6 +17,9 @@ import {removeRows} from './actions/remove-rows';
 import {setRowHeightOverride} from './actions/set-row-height-override';
 import {resetColumnWidths} from './actions/reset-column-widths';
 import {resetRowHeights} from './actions/reset-row-heights';
+import {setRowVisibility} from './actions/set-row-visibility';
+import {setColumnVisibility} from './actions/set-column-visibility';
+import {setViewVisibility} from './actions/set-view-visibility';
 
 import {
     ADD_VIEW_MESSAGE,
@@ -33,7 +36,10 @@ import {
     VIEW_REMOVE_ROW_MESSAGE,
     DEFAULT_CONFIG,
     RESET_COLUMN_WIDTHS_MESSAGE,
-    RESET_ROW_HEIGHTS_MESSAGE
+    RESET_ROW_HEIGHTS_MESSAGE,
+    SET_ROW_VISIBILITY_MESSAGE,
+    SET_COLUMN_VISIBILITY_MESSAGE,
+    SET_VIEW_VISIBILITY_MESSAGE
 } from '../constants';
 
 import {
@@ -42,16 +48,19 @@ import {
     AddViewData,
     ColumnResetData,
     ColumnResizeData,
+    ColumnVisibilityData,
     RemoveColumnData,
     RemoveRowData,
     RemoveViewData,
     RowResetData,
     RowResizeData,
+    RowVisibilityData,
     ViewResetData,
     ViewResizeData,
     ViewtronConfig,
     ViewtronInstance,
-    ViewtronWindow
+    ViewtronWindow,
+    ViewVisibilityData
 } from '../types';
 
 import state from './state';
@@ -109,6 +118,12 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
         state.dispatch(setRowHeightOverride({windowId, rowId, height}));
     });
 
+    ipcMain.on(SET_ROW_VISIBILITY_MESSAGE, (_, {rowId, visible}: RowVisibilityData) => {
+        if (typeof rowId !== 'string') return;
+
+        state.dispatch(setRowVisibility({windowId, rowIds: [rowId], visible}));
+    });
+
     ipcMain.on(RESET_ROW_HEIGHTS_MESSAGE, (_, data: RowResetData) => {
         state.dispatch(resetRowHeights({windowId, ...data}));
     });
@@ -131,6 +146,12 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
         state.dispatch(setColumnWidthOverride({windowId, columnId, width}));
     });
 
+    ipcMain.on(SET_COLUMN_VISIBILITY_MESSAGE, (_, {columnId, visible}: ColumnVisibilityData) => {
+        if (typeof columnId !== 'string') return;
+
+        state.dispatch(setColumnVisibility({windowId, columnIds: [columnId], visible}));
+    });
+
     ipcMain.on(RESET_COLUMN_WIDTHS_MESSAGE, (_, data: ColumnResetData) => {
         state.dispatch(resetColumnWidths({windowId, ...data}));
     });
@@ -148,7 +169,13 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
     ipcMain.on(SET_VIEW_HEIGHT_OVERRIDE_MESSAGE, (_, {viewId, height}: ViewResizeData) => {
         if (!viewId || typeof height !== 'number') return;
 
-        state.dispatch(setViewHeightOverride({windowId, viewId: viewId, height}));
+        state.dispatch(setViewHeightOverride({windowId, viewId, height}));
+    });
+
+    ipcMain.on(SET_VIEW_VISIBILITY_MESSAGE, (_, {viewId, visible}: ViewVisibilityData) => {
+        if (!viewId) return;
+
+        state.dispatch(setViewVisibility({windowId, viewIds: [viewId], visible}));
     });
 
     ipcMain.on(RESET_VIEW_HEIGHTS_MESSAGE, (_, {viewIds}: ViewResetData) => {
