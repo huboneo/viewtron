@@ -36,7 +36,7 @@
     "typescript": "3.6.4"
   },
   "peerDependencies": {
-    "electron": "> 6"
+    "electron": ">= 6"
   },
   "dependencies": {
     "conduxion": "1.0.7",
