@@ -148,6 +148,7 @@ export type Row = {
     height?: number,
     hidden?: boolean
 };
+
 export type ViewtronView = {
     id: string;
     url: string;
