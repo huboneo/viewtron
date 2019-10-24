@@ -6,6 +6,9 @@ See [viewtron-sample-app](https://github.com/huboneo/viewtron-sample-app) for a 
 - [Installation](#installation)
 - [Usage](#usage)
 - [API](#api)
+    - [Core Types](#core-types)
+    - [ipcMain Process](#ipcmain-process)
+    - [ipcRenderer Process](#ipcrenderer-process)
 
 ---
 
@@ -18,7 +21,7 @@ Please note that [`electron`](https://electronjs.org) is a peer-dependency.
 ---
 
 ## Usage
-### Main Process:
+### ipcMain:
 ```typescript
 import {BrowserWindow} from 'electron'
 import {ipcMainHandlers, ViewtronConfig} from 'viewtron';
@@ -42,7 +45,8 @@ const {
 } = addViewtron(mainWindow, config);
 ```
 
-### Preload process:
+### ipcRenderer:
+Tested in preload process, could probably also be done in the renderer process. 
 See [BrowserWindow options.webPreferences.preload](https://electronjs.org/docs/api/browser-window#class-browserwindow)
 
 ```typescript
@@ -100,7 +104,71 @@ window.addEventListener("DOMContentLoaded", () => {
 ---
 
 ## API
-### Main Process
+### Core Types
+```typescript
+import {Store} from 'redux';
+import {BrowserView, BrowserWindow, Rectangle} from 'electron';
+
+import {AppAction, AppState} from '<internal>';
+
+export type ViewtronInstance = {
+    viewtronWindow: ViewtronWindow,
+    state: Store<AppState, AppAction>,
+    removeViewtron: () => void,
+}
+
+export type ViewtronConfig = {
+    spacing: number,
+    minWidth: number,
+    minHeight: number,
+    responsive: boolean,
+    destroyOnClose: boolean,
+}
+
+export type ViewtronWindow = {
+    id: string,
+    instance: BrowserWindow,
+    rect?: Rectangle,
+    config: ViewtronConfig
+}
+
+export type Column = {
+    id: string,
+    windowId: string;
+    rowId: string,
+    name?: string,
+    width?: number,
+    hidden?: boolean
+};
+
+export type Row = {
+    id: string,
+    windowId: string;
+    name?: string,
+    height?: number,
+    hidden?: boolean
+};
+export type ViewtronView = {
+    id: string;
+    url: string;
+    name?: string;
+    windowId: string;
+    columnId: string;
+    rect?: Rectangle;
+    instance: BrowserView;
+    height?: number;
+    options?: any,
+    hidden?: boolean
+}
+
+export type ViewtronUpdateData = {
+    rows: Row[]
+    columns: Column[]
+    views: ViewtronView[]
+}
+```
+
+### ipcMain Process
 - [addViewtron](#addviewtron)
 
 #### addViewtron
@@ -113,8 +181,8 @@ import {ViewtronInstance, ViewtronConfig} from 'viewtron';
 export type addViewtron = (mainWindow: BrowserWindow, config: Partial<ViewtronConfig> = {}) => ViewtronInstance
 ```
 
-### Preload process
-Could probably also be done in the renderer process.
+### ipcRenderer process
+Tested in preload process, could probably also be done in the renderer process.
 - [viewtronInitHandler](#viewtroninithandler)
 - [viewtronResizeHandler](#viewtronresizehandler)
 - [viewtronUpdateHandler](#viewtronupdatehandler)
@@ -168,7 +236,10 @@ export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateDat
 Adds a row to the viewtron area.
 
 ```typescript
-import {AddRowData} from 'viewtron'
+export type AddRowData = {
+    name?: string,
+    height?: number
+}
 
 export default function addRowHandler(data: AddRowData): void
 ```
@@ -177,7 +248,9 @@ export default function addRowHandler(data: AddRowData): void
 Removes a row from the viewtron area.
 
 ```typescript
-import {RemoveRowData} from 'viewtron';
+export type RemoveRowData = {
+    rowId: string
+}
 
 export default function removeRowHandler(data: RemoveRowData): void
 ```
@@ -186,7 +259,10 @@ export default function removeRowHandler(data: RemoveRowData): void
 Moves a row in the viewtron area.
 
 ```typescript
-import {ReorderRowData} from 'viewtron';
+export type ReorderRowData = {
+    rowId: string
+    newIndex: number
+}
 
 export default function reorderRowHandler(data: ReorderRowData): void
 ```
@@ -195,7 +271,10 @@ export default function reorderRowHandler(data: ReorderRowData): void
 Sets height for a specific row.
 
 ```typescript
-import {RowResizeData} from 'viewtron';
+export type RowResizeData = {
+    rowId: string,
+    height: number
+}
 
 export default function rowResizeHandler(data: RowResizeData): void
 ```
@@ -204,7 +283,9 @@ export default function rowResizeHandler(data: RowResizeData): void
 Resets heights for all or specified rows.
 
 ```typescript
-import {RowResetData} from 'viewtron';
+export type RowResetData = {
+    rowIds?: string[]
+}
 
 export default function rowResetHandler(data: RowResetData): void
 ```
@@ -213,7 +294,10 @@ export default function rowResetHandler(data: RowResetData): void
 Sets visibility of a row
 
 ```typescript
-import {RowVisibilityData} from 'viewtron';
+export type RowVisibilityData = {
+    rowId: string,
+    visible: boolean
+}
 
 export default function rowVisibilityHandler(data: RowVisibilityData): void
 ```
@@ -222,7 +306,11 @@ export default function rowVisibilityHandler(data: RowVisibilityData): void
 Adds a column to the viewtron area.
 
 ```typescript
-import {AddColumnData} from 'viewtron'
+export type AddColumnData = {
+    rowId: string,
+    name?: string,
+    width?: number
+}
 
 export default function addColumnHandler(data: AddColumnData): void
 ```
@@ -231,7 +319,9 @@ export default function addColumnHandler(data: AddColumnData): void
 Removes a column from the viewtron area.
 
 ```typescript
-import {RemoveColumnData} from 'viewtron'
+export type RemoveColumnData = {
+    columnId: string
+}
 
 export default function removeColumnHandler(data: RemoveColumnData): void
 ```
@@ -240,7 +330,10 @@ export default function removeColumnHandler(data: RemoveColumnData): void
 Moves a column inside a row.
 
 ```typescript
-import {ReorderColumnData} from 'viewtron'
+export type ReorderColumnData = {
+    columnId: string
+    newIndex: number
+}
 
 export default function reorderColumnHandler(data: ReorderColumnData): void
 ```
@@ -249,7 +342,10 @@ export default function reorderColumnHandler(data: ReorderColumnData): void
 Sets width for a specific column.
 
 ```typescript
-import {ColumnResizeData} from 'viewtron';
+export type ColumnResizeData = {
+    columnId: string
+    width: number
+}
 
 export default function columnResizeHandler(data: ColumnResizeData): void
 ```
@@ -258,7 +354,9 @@ export default function columnResizeHandler(data: ColumnResizeData): void
 Resets widths for all or specified columns.
 
 ```typescript
-import {ColumnResetData} from 'viewtron';
+export type ColumnResetData = {
+    columnIds?: string[]
+}
 
 export default function columnResetHandler(data: ColumnResetData): void
 ```
@@ -267,7 +365,10 @@ export default function columnResetHandler(data: ColumnResetData): void
 Sets visibility of a column
 
 ```typescript
-import {ColumnVisibilityData} from 'viewtron';
+export type ColumnVisibilityData = {
+    columnId: string
+    visible: boolean
+}
 
 export default function columnVisibilityHandler(data: ColumnVisibilityData): void
 ```
@@ -276,7 +377,11 @@ export default function columnVisibilityHandler(data: ColumnVisibilityData): voi
 Adds a view instance.
 
 ```typescript
-import {AddViewData} from 'viewtron';
+export type AddViewData = {
+    url: string,
+    columnId: string
+    name?: string
+}
 
 export default function addViewHandler(data: AddViewData): void
 ```
@@ -285,7 +390,9 @@ export default function addViewHandler(data: AddViewData): void
 Removes a view instance.
 
 ```typescript
-import {RemoveViewData} from 'viewtron';
+export type RemoveViewData = {
+    viewId: string
+}
 
 export default function removeViewHandler(data: RemoveViewData): void
 ```
@@ -294,7 +401,10 @@ export default function removeViewHandler(data: RemoveViewData): void
 Movers a view instance inside a column.
 
 ```typescript
-import {ReorderViewData} from 'viewtron';
+export type ReorderViewData = {
+    viewId: string
+    newIndex: number
+}
 
 export default function reorderViewHandler(data: ReorderViewData): void
 ```
@@ -303,7 +413,10 @@ export default function reorderViewHandler(data: ReorderViewData): void
 Sets height for a specific view instance.
 
 ```typescript
-import {ViewResizeData} from 'viewtron';
+export type ViewResizeData = {
+    viewId: string,
+    height: number
+}
 
 export default function viewResizeHandler(data: ViewResizeData): void
 ```
@@ -312,7 +425,9 @@ export default function viewResizeHandler(data: ViewResizeData): void
 Resets all views, or a specified view, to default dimensions.
 
 ```typescript
-import {ViewResetData} from 'viewtron';
+export type ViewResetData = {
+    viewIds?: string[]
+}
 
 export default function viewResetHandler(data: ViewResetData): void
 ```
@@ -321,7 +436,10 @@ export default function viewResetHandler(data: ViewResetData): void
 Sets visibility of a view.
 
 ```typescript
-import {ViewVisibilityData} from 'viewtron';
+export type ViewVisibilityData = {
+    viewId: string,
+    visible: boolean
+}
 
 export default function viewVisibilityHandler(data: ViewVisibilityData): void
 ```

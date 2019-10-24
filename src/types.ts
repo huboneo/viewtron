@@ -9,6 +9,14 @@ export type ViewtronInstance = {
     removeViewtron: () => void,
 }
 
+export type ViewtronConfig = {
+    spacing: number,
+    minWidth: number,
+    minHeight: number,
+    responsive: boolean,
+    destroyOnClose: boolean,
+}
+
 export type ViewtronWindow = {
     id: string,
     instance: BrowserWindow,
@@ -32,15 +40,6 @@ export type Row = {
     height?: number,
     hidden?: boolean
 };
-
-export type ViewtronConfig = {
-    spacing: number,
-    minWidth: number,
-    minHeight: number,
-    responsive: boolean,
-    destroyOnClose: boolean,
-}
-
 export type ViewtronView = {
     id: string;
     url: string;
@@ -52,6 +51,12 @@ export type ViewtronView = {
     height?: number;
     options?: any,
     hidden?: boolean
+}
+
+export type ViewtronUpdateData = {
+    rows: Row[]
+    columns: Column[]
+    views: ViewtronView[]
 }
 
 export type AddRowData = {
@@ -66,6 +71,20 @@ export type RemoveRowData = {
 export type ReorderRowData = {
     rowId: string
     newIndex: number
+}
+
+export type RowResizeData = {
+    rowId: string,
+    height: number
+}
+
+export type RowResetData = {
+    rowIds?: string[]
+}
+
+export type RowVisibilityData = {
+    rowId: string,
+    visible: boolean
 }
 
 export type AddColumnData = {
@@ -83,6 +102,20 @@ export type ReorderColumnData = {
     newIndex: number
 }
 
+export type ColumnResizeData = {
+    columnId: string
+    width: number
+}
+
+export type ColumnResetData = {
+    columnIds?: string[]
+}
+
+export type ColumnVisibilityData = {
+    columnId: string
+    visible: boolean
+}
+
 export type AddViewData = {
     url: string,
     columnId: string
@@ -98,50 +131,16 @@ export type ReorderViewData = {
     newIndex: number
 }
 
-export type RowResetData = {
-    rowIds?: string[]
-}
-
-export type ColumnResetData = {
-    columnIds?: string[]
+export type ViewResizeData = {
+    viewId: string,
+    height: number
 }
 
 export type ViewResetData = {
     viewIds?: string[]
 }
 
-export type RowResizeData = {
-    rowId: string,
-    height: number
-}
-
-export type ColumnResizeData = {
-    columnId: string
-    width: number
-}
-
-export type ViewResizeData = {
-    viewId: string,
-    height: number
-}
-
-export type RowVisibilityData = {
-    rowId: string,
-    visible: boolean
-}
-
-export type ColumnVisibilityData = {
-    columnId: string
-    visible: boolean
-}
-
 export type ViewVisibilityData = {
     viewId: string,
     visible: boolean
-}
-
-export type ViewtronUpdateData = {
-    rows: Row[]
-    columns: Column[]
-    views: ViewtronView[]
 }
