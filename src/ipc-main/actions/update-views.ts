@@ -46,6 +46,8 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
         const windowColumns = filter(columns, (column) => column.windowId === windowId);
         const windowViews = filter(views, (view) => view.windowId === windowId);
 
+        if (!viewtronWindow) return;
+
         forEach(windowViews, ({instance, hidden, rect}) => {
             if (hidden || !instance || !rect) return;
 

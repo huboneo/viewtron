@@ -55,18 +55,21 @@ import {
     columnResetHandler,
     columnResizeHandler,
     columnVisibilityHandler,
+    viewtronInitHandler,
     removeColumnHandler,
     removeRowHandler,
     removeViewHandler,
+    reorderColumnHandler,
+    reorderRowHandler,
+    reorderViewHandler,
     rowResetHandler,
     rowResizeHandler,
     rowVisibilityHandler,
     viewResetHandler,
-    viewResizeHandler,
-    viewVisibilityHandler,
-    viewtronInitHandler,
     viewtronResizeHandler,
     viewtronUpdateHandler,
+    viewResizeHandler,
+    viewVisibilityHandler
 } from "viewtron/dist/ipc-renderer";
 
 // All of the Node.js APIs are available in the preload process.
@@ -87,71 +90,9 @@ window.addEventListener("DOMContentLoaded", () => {
         // @todo: update logic
     });
 
-    document.getElementById("add-row-form").addEventListener("submit", (event: any) => {
-        // @todo: add row logic
-        addRowHandler({});
-    }, false);
-
-    document.getElementById("add-column-form").addEventListener("submit", (event: any) => {
-        // @todo: add column logic
-        addColumnHandler({rowId});
-    }, false);
-
-    document.getElementById("add-view-form").addEventListener("submit", (event: any) => {
-        // @todo: add view logic
-        addViewHandler({url, columnId});
-    }, false);
-
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove row logic
-        removeRowHandler({rowId});
-    });
-
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove column logic
-        removeColumnHandler({columnId})
-    });
-
-    document.getElementById("foo").addEventListener("click", (event: any) => {
-        // @todo: remove view logic
-        removeViewHandler({viewId})
-    });
-
-    document.getElementById("row-height-form").addEventListener("submit", (event: any) => {
-        // @todo: row resize logic
-        rowResizeHandler({rowId, height});
-    }, false);
-
-    document.getElementById("column-width-form").addEventListener("submit", (event: any) => {
-        // @todo: column resize logic
-        columnResizeHandler({columnId, width});
-    }, false);
-
-    document.getElementById("view-height-form").addEventListener("submit", (event: any) => {
-        // @todo: view resize logic
-        viewResizeHandler({viewId, height});
-    }, false);
-
-    document.getElementById("row-visibility-form").addEventListener("submit", (event: any) => {
-        // @todo: row visibility logic
-        rowVisibilityHandler({rowId, visible});
-    }, false);
-
-    document.getElementById("column-visibility-form").addEventListener("submit", (event: any) => {
-        // @todo: column visibility logic
-        columnVisibilityHandler({columnId, visible});
-    }, false);
-
-    document.getElementById("view-visibility-form").addEventListener("submit", (event: any) => {
-        // @todo: view visibility logic
-        viewVisibilityHandler({viewId, visible});
-    }, false);
-
-    document.getElementById("reset-layout").addEventListener("click", () => {
-        // layout reset logic
-        rowResetHandler({});
-        columnResetHandler({});
-        viewResetHandler({});
+    document.getElementById("foo").addEventListener("bar", () => {
+        // @todo: add logic
+        addRowHandler({}); // or any other handler
     });
 });
 ```
