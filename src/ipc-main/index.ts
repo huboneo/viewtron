@@ -6,7 +6,7 @@ import {assign} from 'lodash';
 import {addWindow} from './actions/add-window';
 import {removeWindow} from './actions/remove-window';
 import {setWindowRect} from './actions/set-window-rect';
-import {setInitialLayout} from './actions/set-initial-layout';
+import {setLayout} from './actions/set-layout';
 
 // row
 import {addRow} from './actions/add-row';
@@ -122,7 +122,7 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
     ipcMain.on(VIEWTRON_SET_LAYOUT_MESSAGE, (_, data: SetLayoutData) => {
         if (!data) return;
 
-        state.dispatch(setInitialLayout({windowId, ...data}));
+        state.dispatch(setLayout({windowId, ...data}));
     });
 
     /**

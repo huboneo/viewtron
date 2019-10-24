@@ -17,7 +17,7 @@ type SetLayoutPayload = {
 
 export type SetLayoutAction = AppActionMould<'SET_LAYOUT', SetLayoutPayload>
 
-export const [setInitialLayout] = actionCreatorFactory<SetLayoutAction>({
+export const [setLayout] = actionCreatorFactory<SetLayoutAction>({
     type: 'SET_LAYOUT',
     consequence({dispatch, getState, action}) {
         const {rows} = getState();
