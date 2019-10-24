@@ -27,13 +27,13 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
             if (!rect) return state;
 
             draft.views = [
-                ...filter(views, (view) => view.hidden || view.windowId !== windowId),
+                ...filter(views, (view) => view.windowId !== windowId),
                 ...recalculateViews(
                     config,
                     rect,
-                    filter(rows, (row) => !row.hidden && row.windowId === windowId),
-                    filter(columns, (column) => !column.hidden && column.windowId === windowId),
-                    filter(views, (view) => !view.hidden && view.windowId === windowId)
+                    filter(rows, (row) => row.windowId === windowId),
+                    filter(columns, (column) => column.windowId === windowId),
+                    filter(views, (view) => view.windowId === windowId)
                 )
             ]
         });

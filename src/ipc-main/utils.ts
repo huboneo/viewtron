@@ -1,40 +1,59 @@
 import {Rectangle} from 'electron';
-import {filter, map, sumBy, flatMap, find, slice} from 'lodash';
+import {filter, map, sumBy, flatMap, find, slice, includes} from 'lodash';
 
 import {Column, ViewtronConfig, ViewtronView, Row} from '../types';
 
 export default function calculateViewRects(config: ViewtronConfig, mainRect: Rectangle, rows: Row[], columns: Column[], views: ViewtronView[]) {
-    const defaultRows = filter(rows, ({height}) => !height);
-    const overriddenRows = filter(rows, 'height');
+    const visibleRows = filter(rows, ({hidden}) => !hidden);
+    const defaultRows = filter(visibleRows, ({height}) => !height);
+    const overriddenRows = filter(visibleRows, 'height');
     const remainingDefaultHeight = minXInt(
         mainRect.height - sumBy(overriddenRows, ({height}) => minXInt(getPixelValue(config, mainRect.height, height!), config.minHeight)),
         config.minHeight
     );
     let currY = mainRect.y || 0;
+    let rowIndex = -1;
 
-    return flatMap(rows, (row, rowIndex) => {
+    return flatMap(rows, (row) => {
         const {height} = row;
         const rowColumns = filter(columns, ({rowId}) => rowId === row.id);
+
+        if (row.hidden) {
+            const rowColumnIds = map(rowColumns, 'id');
+
+            return filter(views, ({columnId}) => includes(rowColumnIds, columnId));
+        }
+
+        rowIndex++;
+
+        const visibleRowColumns = filter(rowColumns, ({hidden}) => !hidden);
         const defaultRowHeight = minXInt(remainingDefaultHeight / defaultRows.length, config.minHeight);
         const calculatedRowHeight = height
             ? getPixelValue(config, mainRect.height, height)
             : defaultRowHeight;
-        const finalRowHeight = rowIndex !== rows.length - 1
+        const finalRowHeight = rowIndex !== visibleRows.length - 1
             ? calculatedRowHeight - config.spacing
             : calculatedRowHeight;
-        const defaultColumns = filter(rowColumns, ({width}) => !width);
-        const overriddenColumns = filter(rowColumns, 'width');
+        const defaultColumns = filter(visibleRowColumns, ({width}) => !width);
+        const overriddenColumns = filter(visibleRowColumns, 'width');
         const remainingDefaultColumnWidth = minXInt(
             mainRect.width - sumBy(overriddenColumns, ({width}) => minXInt(getPixelValue(config, mainRect.width, width!), config.minWidth)),
             config.minWidth
         );
         let currX = mainRect.x || 0;
+        let columnIndex = -1;
 
-        const rowViews = flatMap(rowColumns, (column, columnIndex) => {
+        const rowViews = flatMap(rowColumns, (column) => {
             let currColumnY = currY;
             const columnViews = filter(views, (view) => view.columnId === column.id);
-            const defaultViewHeights = filter(columnViews, ({height}) => !height);
-            const overriddenViewHeights = filter(columnViews, 'height');
+
+            if (column.hidden) return columnViews;
+
+            columnIndex++;
+
+            const visibleColumnViews = filter(columnViews, ({hidden}) => !hidden);
+            const defaultViewHeights = filter(visibleColumnViews, ({height}) => !height);
+            const overriddenViewHeights = filter(visibleColumnViews, 'height');
             const remainingDefaultViewHeight = minXInt(
                 finalRowHeight - sumBy(overriddenViewHeights, ({height}) => minXInt(getPixelValue(config, finalRowHeight, height!), config.minHeight)),
                 config.minHeight
@@ -54,18 +73,24 @@ export default function calculateViewRects(config: ViewtronConfig, mainRect: Rec
                     : defaultColumnWidth,
                 config.minWidth
             );
-            const finalColumnWidth = columnIndex !== rowColumns.length - 1
+            const finalColumnWidth = columnIndex !== visibleRowColumns.length - 1
                 ? calculatedColumnWidth - config.spacing
                 : calculatedColumnWidth;
 
             currX += finalColumnWidth + config.spacing;
 
-            return map(columnViews, (view, viewIndex) => {
+            let viewIndex = -1;
+
+            return map(columnViews, (view) => {
+                if (view.hidden) return view;
+
+                viewIndex++;
+
                 const y = currColumnY;
                 const calculatedViewHeight = view.height
                     ? getPixelValue(config, finalRowHeight, view.height)
                     : defaultViewHeight;
-                const finalViewHeight = viewIndex !== columnViews.length - 1
+                const finalViewHeight = viewIndex !== visibleColumnViews.length - 1
                     ? calculatedViewHeight - config.spacing
                     : calculatedViewHeight;
 
