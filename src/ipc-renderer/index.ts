@@ -1,6 +1,7 @@
 export {default as viewtronInitHandler} from './viewtron-init.handler';
 export {default as viewtronResizeHandler} from './viewtron-resize.handler';
 export {default as viewtronUpdateHandler} from './viewtron-update.handler';
+export {default as viewtronLayoutHandler} from './viewtron-layout.handler';
 
 export {default as addRowHandler} from './add-row.handler'
 export {default as removeRowHandler} from './remove-row.handler'

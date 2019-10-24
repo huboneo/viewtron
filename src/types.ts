@@ -60,6 +60,26 @@ export type ViewtronUpdateData = {
     views: ViewtronView[]
 }
 
+type LayoutView = {
+    url: string,
+    name?: string;
+    height?: number;
+    options?: any,
+    hidden?: boolean
+}
+
+type LayoutColumn = Omit<AddColumnData, 'rowId'> & {
+    views: LayoutView[];
+}
+
+export type LayoutRow = Omit<AddRowData, 'windowId'> & {
+    columns: LayoutColumn[];
+}
+
+export type SetLayoutData = {
+    layout: LayoutRow[]
+}
+
 export type AddRowData = {
     name?: string,
     height?: number
@@ -119,8 +139,11 @@ export type ColumnVisibilityData = {
 
 export type AddViewData = {
     url: string,
-    columnId: string
-    name?: string
+    columnId: string,
+    name?: string;
+    height?: number;
+    options?: any,
+    hidden?: boolean
 }
 
 export type RemoveViewData = {

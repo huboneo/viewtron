@@ -59,7 +59,6 @@ import {
     columnResetHandler,
     columnResizeHandler,
     columnVisibilityHandler,
-    viewtronInitHandler,
     removeColumnHandler,
     removeRowHandler,
     removeViewHandler,
@@ -70,6 +69,8 @@ import {
     rowResizeHandler,
     rowVisibilityHandler,
     viewResetHandler,
+    viewtronInitHandler,
+    viewtronLayoutHandler,
     viewtronResizeHandler,
     viewtronUpdateHandler,
     viewResizeHandler,
@@ -161,12 +162,6 @@ export type ViewtronView = {
     options?: any,
     hidden?: boolean
 }
-
-export type ViewtronUpdateData = {
-    rows: Row[]
-    columns: Column[]
-    views: ViewtronView[]
-}
 ```
 
 ### ipcMain Process
@@ -187,6 +182,7 @@ Tested in preload process, could probably also be done in the renderer process.
 - [viewtronInitHandler](#viewtroninithandler)
 - [viewtronResizeHandler](#viewtronresizehandler)
 - [viewtronUpdateHandler](#viewtronupdatehandler)
+- [viewtronLayoutHandler](#viewtronlayouthandler)
 - [addRowHandler](#addrowhandler)
 - [removeRowHandler](#removerowhandler)
 - [reorderRowHandler](#reorderrowhandler)
@@ -228,9 +224,44 @@ export default function viewtronResizeHandler(viewtronAreaRect: Rectangle): void
 Calls supplied callback whenever viewtron data is updated in main process. Passes updated viewtron state.
 
 ```typescript
-import {ViewtronUpdateData} from 'viewtron';
+import {Row, Column, ViewtronView} from 'viewtron';
+
+export type ViewtronUpdateData = {
+    rows: Row[]
+    columns: Column[]
+    views: ViewtronView[]
+}
 
 export default function viewsUpdatedHandler(callback: (update: ViewtronUpdateData) => void): void
+```
+
+#### viewtronLayoutHandler
+Allows for setting a pre-defined layout in viewtron. **Will replace any and all existing rows/columns/views.**
+
+```typescript
+import {AddColumnData, AddRowData} from 'viewtron';
+
+type LayoutView = {
+    url: string,
+    name?: string;
+    height?: number;
+    options?: any,
+    hidden?: boolean
+}
+
+type LayoutColumn = Omit<AddColumnData, 'rowId'> & {
+    views: LayoutView[];
+}
+
+export type LayoutRow = Omit<AddRowData, 'windowId'> & {
+    columns: LayoutColumn[];
+}
+
+export type SetLayoutData = {
+    layout: LayoutRow[]
+}
+
+export default function viewtronLayoutHandler(data: SetLayoutData): void
 ```
 
 #### addRowHandler

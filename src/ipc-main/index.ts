@@ -6,6 +6,7 @@ import {assign} from 'lodash';
 import {addWindow} from './actions/add-window';
 import {removeWindow} from './actions/remove-window';
 import {setWindowRect} from './actions/set-window-rect';
+import {setInitialLayout} from './actions/set-initial-layout';
 
 // row
 import {addRow} from './actions/add-row';
@@ -53,7 +54,8 @@ import {
     SET_VIEW_VISIBILITY_MESSAGE,
     REORDER_ROW_MESSAGE,
     REORDER_COLUMN_MESSAGE,
-    REORDER_VIEW_MESSAGE
+    REORDER_VIEW_MESSAGE,
+    VIEWTRON_SET_LAYOUT_MESSAGE
 } from '../constants';
 
 import {
@@ -65,10 +67,13 @@ import {
     ColumnVisibilityData,
     RemoveColumnData,
     RemoveRowData,
-    RemoveViewData, ReorderColumnData, ReorderRowData, ReorderViewData,
+    RemoveViewData,
+    ReorderColumnData,
+    ReorderRowData,
+    ReorderViewData,
     RowResetData,
     RowResizeData,
-    RowVisibilityData,
+    RowVisibilityData, SetLayoutData,
     ViewResetData,
     ViewResizeData,
     ViewtronConfig,
@@ -78,6 +83,7 @@ import {
 } from '../types';
 
 import state from './state';
+import Rectangle = Electron.Rectangle;
 
 export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronConfig> = {}): ViewtronInstance {
     const windowId = uuid();
@@ -101,16 +107,22 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
     /**
      * Viewtron area handlers
      */
-    ipcMain.on(VIEWTRON_INIT_MESSAGE, (_, rect) => {
+    ipcMain.on(VIEWTRON_INIT_MESSAGE, (_, rect: Rectangle) => {
         if (!rect) return;
 
         state.dispatch(setWindowRect({windowId, rect}));
     });
 
-    ipcMain.on(VIEWTRON_RESIZE_MESSAGE, (_, rect) => {
+    ipcMain.on(VIEWTRON_RESIZE_MESSAGE, (_, rect: Rectangle) => {
         if (!rect) return;
 
         state.dispatch(setWindowRect({windowId, rect}));
+    });
+
+    ipcMain.on(VIEWTRON_SET_LAYOUT_MESSAGE, (_, data: SetLayoutData) => {
+        if (!data) return;
+
+        state.dispatch(setInitialLayout({windowId, ...data}));
     });
 
     /**
