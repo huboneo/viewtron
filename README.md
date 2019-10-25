@@ -184,6 +184,7 @@ Tested in preload process, could probably also be done in the renderer process.
 - [viewtronResizeHandler](#viewtronresizehandler)
 - [viewtronUpdateHandler](#viewtronupdatehandler)
 - [viewtronLayoutHandler](#viewtronlayouthandler)
+- [viewtronBroadcastHandler](#viewtronbroadcasthandler)
 - [addRowHandler](#addrowhandler)
 - [removeRowHandler](#removerowhandler)
 - [reorderRowHandler](#reorderrowhandler)
@@ -263,6 +264,19 @@ export type SetLayoutData = {
 }
 
 export default function viewtronLayoutHandler(data: SetLayoutData): void
+```
+
+#### viewtronBroadcastHandler
+Allows for sending data to all or specified views.
+
+```typescript
+export type BroadcastData = {
+    channel: string,
+    args: any[],
+    viewIds?: string[]
+}
+
+export default function viewtronBroadcastHandler(data: BroadcastData): void
 ```
 
 #### addRowHandler

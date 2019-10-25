@@ -7,6 +7,7 @@ import {addWindow} from './actions/add-window';
 import {removeWindow} from './actions/remove-window';
 import {setWindowRect} from './actions/set-window-rect';
 import {setLayout} from './actions/set-layout';
+import {broadcastToViews} from './actions/broadcast-to-views';
 import {updateViews} from './actions/update-views';
 
 // row
@@ -56,13 +57,13 @@ import {
     REORDER_ROW_MESSAGE,
     REORDER_COLUMN_MESSAGE,
     REORDER_VIEW_MESSAGE,
-    VIEWTRON_SET_LAYOUT_MESSAGE
+    VIEWTRON_SET_LAYOUT_MESSAGE, VIEWTRON_BROADCAST_MESSAGE
 } from '../constants';
 
 import {
     AddColumnData,
     AddRowData,
-    AddViewData,
+    AddViewData, BroadcastData,
     ColumnResetData,
     ColumnResizeData,
     ColumnVisibilityData,
@@ -129,6 +130,12 @@ export function addViewtron(mainWindow: BrowserWindow, config: Partial<ViewtronC
 
         state.dispatch(setLayout({windowId, ...data}));
         state.dispatch(updateViews({windowId}));
+    });
+
+    ipcMain.on(VIEWTRON_BROADCAST_MESSAGE, (_, data: BroadcastData) => {
+        if (!data) return;
+
+        state.dispatch(broadcastToViews({windowId, ...data}));
     });
 
     /**

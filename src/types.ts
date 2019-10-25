@@ -81,6 +81,12 @@ export type SetLayoutData = {
     layout: LayoutRow[]
 }
 
+export type BroadcastData = {
+    channel: string,
+    args: any[],
+    viewIds?: string[]
+}
+
 export type AddRowData = {
     name?: string,
     height?: number
