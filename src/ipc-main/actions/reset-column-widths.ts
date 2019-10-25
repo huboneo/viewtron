@@ -4,8 +4,6 @@ import {omit, includes, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
-
 type ResetColumnWidthsPayload = { windowId: string, columnIds?: string[] };
 
 export type ResetColumnWidthsAction = AppActionMould<'RESET_COLUMN_WIDTHS', ResetColumnWidthsPayload>
@@ -32,10 +30,5 @@ export const [resetColumnWidths] = actionCreatorFactory<ResetColumnWidthsAction>
                 (column) => omit(column, 'width')
             );
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

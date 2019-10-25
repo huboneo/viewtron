@@ -4,7 +4,6 @@ import {findIndex} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
 import {getOverrideValue} from '../utils';
 
 type SetRowHeightOverridePayload = { windowId: string, rowId: string, height: number };
@@ -24,10 +23,5 @@ export const [setRowHeightOverride] = actionCreatorFactory<SetRowHeightOverrideA
 
             draft.rows[rowIndex].height = getOverrideValue(config, rect.height, height);
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

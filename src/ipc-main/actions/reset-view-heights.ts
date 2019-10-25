@@ -4,8 +4,6 @@ import {omit, includes, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
-
 type ResetViewHeightsPayload = { windowId: string, viewIds?: string[] };
 
 export type ResetViewHeightsAction = AppActionMould<'RESET_VIEW_HEIGHTS', ResetViewHeightsPayload>
@@ -32,10 +30,5 @@ export const [resetViewHeights] = actionCreatorFactory<ResetViewHeightsAction>({
                 (view) => omit(view, 'height')
             );
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

@@ -4,7 +4,6 @@ import {findIndex} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
 import {getOverrideValue} from '../utils';
 
 type SetViewHeightOverridePayload = { windowId: string, viewId: string, height: number };
@@ -24,10 +23,5 @@ export const [setViewHeightOverride] = actionCreatorFactory<SetViewHeightOverrid
 
             draft.views[viewIndex].height = getOverrideValue(config, rect.height, height);
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

@@ -4,8 +4,6 @@ import {filter, includes, forEach} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
-
 type RemoveViewsPayload = { windowId: string, viewIds: string[] }
 
 export type RemoveViewsAction = AppActionMould<'REMOVE_VIEWS', RemoveViewsPayload>
@@ -27,10 +25,5 @@ export const [removeViews] = actionCreatorFactory<RemoveViewsAction>({
 
             draft.views = filter(views, ({id}) => !includes(viewIds, id));
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

@@ -5,7 +5,7 @@ import {some} from 'lodash';
 import {AppActionMould} from '../state';
 import {Column} from '../../types';
 
-import {updateViews} from './update-views';
+import {getOverrideValue} from '../utils';
 
 type AddColumnPayload = Column;
 
@@ -15,18 +15,19 @@ export const [addColumn] = actionCreatorFactory<AddColumnAction>({
     type: 'ADD_COLUMN',
     reducer(state, payload) {
         return produce(state, (draft) => {
-            const {rowId} = payload;
-            const {rows} = draft;
+            const {rowId, width, windowId} = payload;
+            const {rows, activeWindows} = draft;
+            const {config, rect} = activeWindows[windowId] || {};
             const rowExists = some(rows, ({id}) => id === rowId);
 
-            if (!rowExists) return;
+            if (!rect || !rowExists) return;
 
-            draft.columns.push(payload);
+            draft.columns.push({
+                ...payload,
+                width: width
+                    ? getOverrideValue(config, rect.width, width)
+                    : undefined
+            });
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

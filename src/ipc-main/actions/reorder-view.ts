@@ -5,7 +5,6 @@ import {filter, findIndex, concat, find} from 'lodash';
 import {AppActionMould} from '../state';
 
 import {reorderItems} from '../utils';
-import {updateViews} from './update-views';
 
 type ReorderViewPayload = { windowId: string, viewId: string, newIndex: number };
 
@@ -33,10 +32,5 @@ export const [reorderView] = actionCreatorFactory<ReorderViewAction>({
                 )
             );
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

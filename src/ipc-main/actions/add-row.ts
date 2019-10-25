@@ -4,7 +4,7 @@ import produce from 'immer';
 import {Row} from '../../types';
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
+import {getOverrideValue} from '../utils';
 
 type AddRowPayload = Row;
 
@@ -14,16 +14,18 @@ export const [addRow] = actionCreatorFactory<AddRowAction>({
     type: 'ADD_ROW',
     reducer(state, payload) {
         return produce(state, (draft) => {
-            const {windowId} = payload;
+            const {windowId, height} = payload;
+            const {activeWindows} = draft;
+            const {config, rect} = activeWindows[windowId] || {};
 
-            if (!draft.activeWindows[windowId]) return;
+            if (!rect) return;
 
-            draft.rows.push(payload);
+            draft.rows.push({
+                ...payload,
+                height: height
+                    ? getOverrideValue(config, rect.height, height)
+                    : undefined
+            });
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

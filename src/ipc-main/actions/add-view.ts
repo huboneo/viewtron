@@ -6,7 +6,7 @@ import {some} from 'lodash';
 import {AppActionMould} from '../state';
 import {ViewtronView} from '../../types';
 
-import {updateViews} from './update-views';
+import {getOverrideValue} from '../utils';
 
 type AddViewPayload = Omit<ViewtronView, 'instance'>
 
@@ -16,11 +16,12 @@ export const [addView] = actionCreatorFactory<AddViewAction>({
     type: 'ADD_VIEW',
     reducer(state, payload) {
         return produce(state, (draft) => {
-            const {columns} = draft;
-            const {windowId, columnId, url} = payload;
+            const {activeWindows, columns} = draft;
+            const {windowId, columnId, url, height} = payload;
             const columnExits = some(columns, ({id}) => id === columnId);
+            const {config, rect} = activeWindows[windowId] || {};
 
-            if (!columnExits) return;
+            if (!rect || !columnExits) return;
 
             const {instance} = draft.activeWindows[windowId];
             const viewInstance = new BrowserView();
@@ -30,13 +31,11 @@ export const [addView] = actionCreatorFactory<AddViewAction>({
 
             draft.views.push({
                 ...payload,
-                instance: viewInstance
+                instance: viewInstance,
+                height: height
+                    ? getOverrideValue(config, rect.height, height)
+                    : undefined
             });
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });

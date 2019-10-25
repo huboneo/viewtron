@@ -1,6 +1,6 @@
 import {actionCreatorFactory} from 'conduxion';
 import uuid from 'uuid/v4';
-import {filter, map, forEach} from 'lodash';
+import {filter, map, forEach, omit} from 'lodash';
 
 import {AppActionMould} from '../state';
 import {LayoutRow} from '../../types';
@@ -34,7 +34,7 @@ export const [setLayout] = actionCreatorFactory<SetLayoutAction>({
             const rowId = uuid();
 
             dispatch(addRow({
-                ...row,
+                ...omit(row, 'columns'),
                 id: rowId,
                 windowId
             }));
@@ -43,7 +43,7 @@ export const [setLayout] = actionCreatorFactory<SetLayoutAction>({
                 const columnId = uuid();
 
                 dispatch(addColumn({
-                    ...column,
+                    ...omit(column, 'views'),
                     id: columnId,
                     rowId,
                     windowId

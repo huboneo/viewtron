@@ -1,16 +1,11 @@
 import {actionCreatorFactory} from 'conduxion';
 import produce from 'immer';
-import {forEach, throttle, filter} from 'lodash';
+import {forEach, filter} from 'lodash';
 
 import {AppActionMould} from '../state';
-import {ViewtronUpdateData} from '../../types';
 
 import {VIEWTRON_UPDATE_MESSAGE} from '../../constants';
 import recalculateViews from '../utils';
-
-const throttledEmitter = throttle((mainWindow, data: ViewtronUpdateData) => {
-    mainWindow.webContents.send(VIEWTRON_UPDATE_MESSAGE, data);
-}, 200, {trailing: true}); // @todo: leading false?
 
 export type UpdateViewsPayload = { windowId: string };
 
@@ -54,7 +49,7 @@ export const [updateViews] = actionCreatorFactory<UpdateViewsAction>({
             instance.setBounds(rect);
         });
 
-        throttledEmitter(viewtronWindow.instance, {
+        viewtronWindow.instance.webContents.send(VIEWTRON_UPDATE_MESSAGE,  {
             rows: windowRows,
             columns: windowColumns,
             views: windowViews

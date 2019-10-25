@@ -4,8 +4,6 @@ import {filter, includes, forEach, map} from 'lodash';
 
 import {AppActionMould} from '../state';
 
-import {updateViews} from './update-views';
-
 type SetViewVisibilityPayload = { windowId: string, viewIds: string[], visible: boolean }
 
 export type SetViewVisibilityAction = AppActionMould<'SET_VIEW_VISIBILITY', SetViewVisibilityPayload>
@@ -33,10 +31,5 @@ export const [setViewVisibility] = actionCreatorFactory<SetViewVisibilityAction>
                 : view
             );
         });
-    },
-    consequence({dispatch, action}) {
-        const {windowId} = action.payload;
-
-        dispatch(updateViews({windowId}));
     }
 });
