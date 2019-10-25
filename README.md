@@ -124,6 +124,7 @@ export type ViewtronConfig = {
     minHeight: number,
     responsive: boolean,
     destroyOnClose: boolean,
+    browserViewDefaultOptions: BrowserViewConstructorOptions,
 }
 
 export type ViewtronWindow = {

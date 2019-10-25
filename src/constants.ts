@@ -32,4 +32,5 @@ export const DEFAULT_CONFIG: ViewtronConfig = {
     minHeight: 50,
     responsive: true,
     destroyOnClose: true,
+    browserViewDefaultOptions: {}
 };

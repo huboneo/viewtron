@@ -1,7 +1,7 @@
 import {BrowserView} from 'electron';
 import {actionCreatorFactory} from 'conduxion';
 import produce from 'immer';
-import {some} from 'lodash';
+import {some, merge} from 'lodash';
 
 import {AppActionMould} from '../state';
 import {ViewtronView} from '../../types';
@@ -23,8 +23,9 @@ export const [addView] = actionCreatorFactory<AddViewAction>({
 
             if (!rect || !columnExits) return;
 
+            const {browserViewDefaultOptions} = config;
             const {instance} = draft.activeWindows[windowId];
-            const viewInstance = new BrowserView(options);
+            const viewInstance = new BrowserView(merge({}, browserViewDefaultOptions, options));
 
             instance.addBrowserView(viewInstance);
             viewInstance.webContents.loadURL(url);
