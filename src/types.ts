@@ -1,5 +1,5 @@
 import {Store} from 'redux';
-import {BrowserView, BrowserWindow, Rectangle} from 'electron';
+import {BrowserView, BrowserWindow, Rectangle, BrowserViewConstructorOptions} from 'electron';
 
 import {AppAction, AppState} from './ipc-main/state';
 
@@ -50,7 +50,7 @@ export type ViewtronView = {
     rect?: Rectangle;
     instance: BrowserView;
     height?: number;
-    options?: any,
+    options?: BrowserViewConstructorOptions,
     hidden?: boolean
 }
 
@@ -142,7 +142,7 @@ export type AddViewData = {
     columnId: string,
     name?: string;
     height?: number;
-    options?: any,
+    options?: BrowserViewConstructorOptions,
     hidden?: boolean
 }
 

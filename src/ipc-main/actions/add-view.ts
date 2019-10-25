@@ -17,14 +17,14 @@ export const [addView] = actionCreatorFactory<AddViewAction>({
     reducer(state, payload) {
         return produce(state, (draft) => {
             const {activeWindows, columns} = draft;
-            const {windowId, columnId, url, height} = payload;
+            const {windowId, columnId, url, height, options = {}} = payload;
             const columnExits = some(columns, ({id}) => id === columnId);
             const {config, rect} = activeWindows[windowId] || {};
 
             if (!rect || !columnExits) return;
 
             const {instance} = draft.activeWindows[windowId];
-            const viewInstance = new BrowserView();
+            const viewInstance = new BrowserView(options);
 
             instance.addBrowserView(viewInstance);
             viewInstance.webContents.loadURL(url);

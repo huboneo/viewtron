@@ -108,7 +108,7 @@ window.addEventListener("DOMContentLoaded", () => {
 ### Core Types
 ```typescript
 import {Store} from 'redux';
-import {BrowserView, BrowserWindow, Rectangle} from 'electron';
+import {BrowserView, BrowserViewConstructorOptions, BrowserWindow, Rectangle} from 'electron';
 
 import {AppAction, AppState} from '<internal>';
 
@@ -159,7 +159,7 @@ export type ViewtronView = {
     rect?: Rectangle;
     instance: BrowserView;
     height?: number;
-    options?: any,
+    options?: BrowserViewConstructorOptions,
     hidden?: boolean
 }
 ```
@@ -409,10 +409,15 @@ export default function columnVisibilityHandler(data: ColumnVisibilityData): voi
 Adds a view instance.
 
 ```typescript
+import {BrowserViewConstructorOptions} from 'electron';
+
 export type AddViewData = {
     url: string,
-    columnId: string
-    name?: string
+    columnId: string,
+    name?: string;
+    height?: number;
+    options?: BrowserViewConstructorOptions,
+    hidden?: boolean
 }
 
 export default function addViewHandler(data: AddViewData): void
