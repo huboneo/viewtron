@@ -1,6 +1,6 @@
 {
   "name": "viewtron",
-  "version": "2.2.3",
+  "version": "2.3.0",
   "description": "Electron browser view management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
