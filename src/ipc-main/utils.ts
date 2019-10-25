@@ -123,8 +123,8 @@ function getPixelValue(config: ViewtronConfig, base: number, target: number) {
 }
 
 export function getOverrideValue(config: ViewtronConfig, base: number, target: number) {
-    if (config.responsive) {
-        return target / base;
+    if (config.responsive && target > 1) {
+        return target / base
     }
 
     return target;
